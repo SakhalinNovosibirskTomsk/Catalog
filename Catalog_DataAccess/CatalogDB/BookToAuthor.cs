@@ -7,9 +7,9 @@ namespace Catalog_DataAccess.CatalogDB
 
     /// <summary>
     /// Связь книги с автором
-    /// </summary>
+    /// </summary> 
     [Table("BooksToAuthors")]
-    [Index("BookId", "AuthorId" IsUnique = true, Name = "BookIdAuthorId")]
+    [Index("BookId", "AuthorId", IsUnique = true, Name = "BookIdAuthorId")]
     [Comment("Связь книги с автором")]
     public class BookToAuthor
     {
