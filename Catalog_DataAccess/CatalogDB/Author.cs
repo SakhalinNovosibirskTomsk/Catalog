@@ -37,7 +37,7 @@ namespace Catalog_DataAccess.CatalogDB
         /// </summary>
         [MaxLength(200)]
         [Comment("Отчество автора")]
-        public string MiddleName { get; set; } = string.Empty;
+        public string? MiddleName { get; set; } = string.Empty;
 
         /// <summary>
         /// Полное имя

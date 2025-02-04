@@ -28,19 +28,19 @@ namespace Catalog_DataAccess.CatalogDB
         /// </summary>
         [MaxLength(300)]
         [Comment("Описание статуса состояния экземпляра книги")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Признак, что состояние является исходным (например, присваивается по умолчанию при поступлении нового экземпляра книги)
         /// </summary>
         [Comment("Признак, что состояние является исходным (например, присваивается по умолчанию при поступлении нового экземпляра книги)")]
-        public bool IsInitialState { get; set; }
+        public bool IsInitialState { get; set; } = false;
 
         /// <summary>
         /// Признак, что при выставлении данного состояния экземпляру книги (например, при возврате) требуется обязательный комментарий
         /// </summary>
         [Comment("Признак, что при выставлении данного состояния экземпляру книги (например, при возврате) требуется обязательный комментарий")]
-        public bool IsNeedComment { get; set; }
+        public bool IsNeedComment { get; set; } = false;
 
         /// <summary>
         /// Признак удаления записи в архив

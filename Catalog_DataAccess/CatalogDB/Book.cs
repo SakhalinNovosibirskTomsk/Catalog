@@ -27,7 +27,7 @@ namespace Catalog_DataAccess.CatalogDB
         /// </summary>
         [MaxLength(13)]
         [Comment("The International Standard Book Number - Международный стандартный книжный номер")]
-        public string ISBN { get; set; }
+        public string? ISBN { get; set; }
 
         /// <summary>
         /// ИД издателя
@@ -53,7 +53,7 @@ namespace Catalog_DataAccess.CatalogDB
         /// </summary>
         [MaxLength(1000)]
         [Comment("Ссылка на электронную версию книги")]
-        public string EBookLink { get; set; } = string.Empty;
+        public string? EBookLink { get; set; } = string.Empty;
 
         /// <summary>
         /// Количество скачиваний электронной версии книги
