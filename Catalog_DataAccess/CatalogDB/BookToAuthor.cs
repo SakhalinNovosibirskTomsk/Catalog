@@ -11,7 +11,7 @@ namespace Catalog_DataAccess.CatalogDB
     [Table("BooksToAuthors")]
     [Index("BookId", "AuthorId", IsUnique = true, Name = "BookIdAuthorId")]
     [Comment("Связь книги с автором")]
-    public class BookToAuthor
+    public class BookToAuthor : BaseEntity
     {
         /// <summary>
         /// ИД книги

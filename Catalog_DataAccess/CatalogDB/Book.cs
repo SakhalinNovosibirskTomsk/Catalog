@@ -25,7 +25,7 @@ namespace Catalog_DataAccess.CatalogDB
         /// <summary>
         /// ISBN
         /// </summary>
-        [MaxLength(13)]
+        [MaxLength(17)]
         [Comment("The International Standard Book Number - Международный стандартный книжный номер")]
         public string? ISBN { get; set; }
 

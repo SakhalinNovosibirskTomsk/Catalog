@@ -43,7 +43,7 @@ namespace Catalog_DataAccess.CatalogDB
         /// Полное имя
         /// </summary>
         [NotMapped]
-        public string FullName => $"{FirstName} {LastName} {MiddleName}";
+        public string FullName => FirstName + (String.IsNullOrEmpty(MiddleName) ? " " : " " + MiddleName.Trim() + " ") + LastName;
 
         /// <summary>
         /// Является ли зарубежным автором

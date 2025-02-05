@@ -10,7 +10,7 @@ namespace Catalog_DataAccess.CatalogDB
     /// </summary>
     [Table("BookInstances")]
     [Comment("Экземпляры книг")]
-    public class BookInstance
+    public class BookInstance : BaseEntity
     {
         /// <summary>
         /// ИД книги
