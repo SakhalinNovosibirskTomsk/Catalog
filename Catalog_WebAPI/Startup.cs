@@ -1,0 +1,117 @@
+﻿using Catalog_Common;
+using Catalog_DataAccess;
+using Microsoft.EntityFrameworkCore;
+using static Catalog_Common.SD;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+
+namespace Catalog_WebAPI
+{
+    public class Startup
+    {
+
+        public IConfiguration Configuration { get; }
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddControllers().AddMvcOptions(x =>
+                x.SuppressAsyncSuffixInActionNames = false);
+            //services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+            //services.AddScoped(typeof(IPartnerPromoCodeLimitRepository), typeof(PartnerPromoCodeLimitRepository));
+            //services.AddScoped<IDbInitializer, EfDbInitializer>();
+            //services.AddDbContext<DataContext>(x =>
+            //{
+            //    x.UseSqlite("Filename=PromoCodeFactoryDb.sqlite");
+            //    //x.UseNpgsql(Configuration.GetConnectionString("PromoCodeFactoryDb"));
+            //    x.UseSnakeCaseNamingConvention();
+            //    x.UseLazyLoadingProxies();
+            //});
+
+
+            var dbConnectionMode = Configuration.GetValue<string>("DbConnectionMode");
+
+            DbConnectionMode dbConnectionModeEnum = (DbConnectionMode)Enum.Parse(typeof(DbConnectionMode), dbConnectionMode, true);
+
+            switch (dbConnectionModeEnum)
+            {
+                case DbConnectionMode.MSSQL:
+                    {
+                        services.AddDbContext<ApplicationDbContext>(options =>
+                        {
+                            options.UseSqlServer(Configuration.GetConnectionString("CatalogDBMSSQLConnection"),
+                            u => u.CommandTimeout(SD.SqlCommandConnectionTimeout));
+                            options.UseLazyLoadingProxies();
+                        });
+
+                        break;
+                    }
+                case DbConnectionMode.PostgreSQL:
+                    {
+                        services.AddDbContext<ApplicationDbContext>(options =>
+                        {
+                            options.UseNpgsql(Configuration.GetConnectionString("CatalogDBPostgresSQLConnection"),
+                            u => u.CommandTimeout(SD.SqlCommandConnectionTimeout));
+                            options.UseLazyLoadingProxies();
+                        });
+                        break;
+                    }
+                case DbConnectionMode.SqlLight:
+                    {
+                        services.AddDbContext<ApplicationDbContext>(options =>
+                        {
+                            options.UseSqlite(Configuration.GetConnectionString("CatalogDBSqlLightConnection"),
+                            u => u.CommandTimeout(SD.SqlCommandConnectionTimeout));
+                            options.UseLazyLoadingProxies();
+                        });
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+
+            services.AddOpenApiDocument(options =>
+            {
+                options.Title = "Catalog (Library API Doc";
+                options.Version = "1.0";
+            });
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env/*, IDbInitializer dbInitializer*/)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseHsts();
+            }
+
+            app.UseOpenApi();
+            app.UseSwaggerUi(x =>
+            {
+                x.DocExpansion = "list";
+            });
+
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+            //dbInitializer.InitializeDb();
+        }
+    }
+}
