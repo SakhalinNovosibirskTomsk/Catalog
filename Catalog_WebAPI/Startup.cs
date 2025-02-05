@@ -1,5 +1,6 @@
 ﻿using Catalog_Common;
 using Catalog_DataAccess;
+using Catalog_DataAccess.DbInitializer;
 using Microsoft.EntityFrameworkCore;
 using static Catalog_Common.SD;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
@@ -22,9 +23,10 @@ namespace Catalog_WebAPI
         {
             services.AddControllers().AddMvcOptions(x =>
                 x.SuppressAsyncSuffixInActionNames = false);
+            services.AddScoped<IDbInitializer, DbInitializer>();
+
             //services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-            //services.AddScoped(typeof(IPartnerPromoCodeLimitRepository), typeof(PartnerPromoCodeLimitRepository));
-            //services.AddScoped<IDbInitializer, EfDbInitializer>();
+            //services.AddScoped(typeof(IPartnerPromoCodeLimitRepository), typeof(PartnerPromoCodeLimitRepository));            
             //services.AddDbContext<DataContext>(x =>
             //{
             //    x.UseSqlite("Filename=PromoCodeFactoryDb.sqlite");
@@ -85,7 +87,7 @@ namespace Catalog_WebAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env/*, IDbInitializer dbInitializer*/)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDbInitializer dbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -111,7 +113,7 @@ namespace Catalog_WebAPI
                 endpoints.MapControllers();
             });
 
-            //dbInitializer.InitializeDb();
+            dbInitializer.InitializeDb();
         }
     }
 }
