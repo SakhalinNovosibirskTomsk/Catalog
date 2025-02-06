@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MSEF = Microsoft.EntityFrameworkCore;
 
 namespace Catalog_DataAccess.CatalogDB
 {
@@ -9,8 +9,8 @@ namespace Catalog_DataAccess.CatalogDB
     /// Справочник авторов
     /// </summary>
     [Table("Authors")]
-    [Index("FirstName", "LastName", "MiddleName", IsUnique = true, Name = "FullName")]
-    [Comment("Справочник авторов книг")]
+    [MSEF.Index("FirstName", "LastName", "MiddleName", IsUnique = true, Name = "FullName")]
+    [MSEF.Comment("Справочник авторов книг")]
     public class Author : BaseEntity
     {
 
@@ -20,7 +20,7 @@ namespace Catalog_DataAccess.CatalogDB
         [Required]
         [MaxLength(200)]
         [MinLength(1)]
-        [Comment("Имя автора")]
+        [MSEF.Comment("Имя автора")]
         public string FirstName { get; set; }
 
         /// <summary>
@@ -29,14 +29,14 @@ namespace Catalog_DataAccess.CatalogDB
         [Required]
         [MaxLength(200)]
         [MinLength(1)]
-        [Comment("Фамилия автора")]
+        [MSEF.Comment("Фамилия автора")]
         public string LastName { get; set; }
 
         /// <summary>
         /// Отчество
         /// </summary>
         [MaxLength(200)]
-        [Comment("Отчество автора")]
+        [MSEF.Comment("Отчество автора")]
         public string? MiddleName { get; set; } = string.Empty;
 
         /// <summary>
@@ -48,27 +48,27 @@ namespace Catalog_DataAccess.CatalogDB
         /// <summary>
         /// Является ли зарубежным автором
         /// </summary>
-        [Comment("Признак является ли зарубежным автором")]
+        [MSEF.Comment("Признак является ли зарубежным автором")]
         public bool IsForeign { get; set; } = false;
 
         /// <summary>
         /// ИД пользователя добавившего запись
         /// </summary>
         [Required]
-        [Comment("ИД пользователя добавившего запись")]
+        [MSEF.Comment("ИД пользователя добавившего запись")]
         public Guid AddUserId { get; set; } = Guid.NewGuid();
 
         /// <summary>
         /// Дата/время добавления записи
         /// </summary>
         [Required]
-        [Comment("Дата/время добавления записи")]
+        [MSEF.Comment("Дата/время добавления записи")]
         public DateTime AddTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Является ли запись аврхивной
         /// </summary>
-        [Comment("Признак является ли запись аврхивной")]
+        [MSEF.Comment("Признак является ли запись аврхивной")]
         public bool IsArchive { get; set; } = false;
     }
 }

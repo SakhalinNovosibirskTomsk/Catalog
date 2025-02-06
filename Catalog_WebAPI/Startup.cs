@@ -39,6 +39,7 @@ namespace Catalog_WebAPI
             var dbConnectionMode = Configuration.GetValue<string>("DbConnectionMode");
 
             DbConnectionMode dbConnectionModeEnum = (DbConnectionMode)Enum.Parse(typeof(DbConnectionMode), dbConnectionMode, true);
+            SD.dbConnectionMode = dbConnectionModeEnum;
 
             switch (dbConnectionModeEnum)
             {

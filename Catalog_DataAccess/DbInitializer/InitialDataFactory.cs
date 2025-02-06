@@ -127,7 +127,7 @@ namespace Catalog_DataAccess.DbInitializer
             {
                 Id = 10,
                 FirstName = "Чингиз",
-                LastName = "Айматов",
+                LastName = "Айтматов",
                 MiddleName = "Торекулович",
                 IsForeign = false,
                 AddUserId = SD.UserIdForInitialData,
@@ -211,7 +211,7 @@ namespace Catalog_DataAccess.DbInitializer
             {
                 Id = 17,
                 FirstName = "Светлана",
-                LastName = "Алексеевич",
+                LastName = "Алексиевич",
                 MiddleName = "Александровна",
                 IsForeign = false,
                 AddUserId = SD.UserIdForInitialData,
@@ -948,262 +948,299 @@ namespace Catalog_DataAccess.DbInitializer
         /// <summary>
         /// Прявязка авторов книг к книгам
         /// </summary>
-        public static List<BookToAuthor> BooksToAuthors => new List<BookToAuthor>()
+        public static List<BookToAuthor> BookToAuthors
         {
+            get
+            {
+                var bookToAuthors = new List<BookToAuthor>();
 
-            new BookToAuthor
-            {
-                Id = 1,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Деревянные кони. Пелагея. Алька. Безотцовщина. Вокруг да около. Жила-была Семужка (сборник)").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Абрамов").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
+                bookToAuthors.Add(
+                    new BookToAuthor
+                    {
+                        Id = 1,
+                        BookId = Books.FirstOrDefault(x => x.Name == "Деревянные кони. Пелагея. Алька. Безотцовщина. Вокруг да около. Жила-была Семужка (сборник)").Id,
+                        AuthorId = Authors.FirstOrDefault(x => x.LastName == "Абрамов").Id,
+                        AddUserId = SD.UserIdForInitialData,
+                        AddTime = DateTime.Now,
+                    });
 
 
-            new BookToAuthor
-            {
-                Id = 2,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Две зимы и три лета").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Абрамов").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
+                bookToAuthors.Add(
+                        new BookToAuthor
+                        {
+                            Id = 2,
+                            BookId = Books.FirstOrDefault(x => x.Name == "Две зимы и три лета").Id,
+                            AuthorId = Authors.FirstOrDefault(x => x.LastName == "Абрамов").Id,
+                            AddUserId = SD.UserIdForInitialData,
+                            AddTime = DateTime.Now,
+                        });
 
-           new BookToAuthor
-            {
-                Id = 3,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Деревянные кони. Повести. Рассказы").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Абрамов").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 4,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Женщина в песках").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Абэ").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 5,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Житие протопопа Аввакума, им самим написанное, и другие его сочинения").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Кондратьев").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 6,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Собрание сочинений в 6 томах. Том 5. Чудеса в решете").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Аверченко").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 7,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Молодняк").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Аверченко").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 8,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Тайна двух океанов").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Адамов").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 9,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Хатынская повесть").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Адамович").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 10,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Хатынская повесть. Каратели (сборник)").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Адамович").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 11,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Обитатели холмов").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Адамс").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 12,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Три закона роботехники (сборник)").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Азимов").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 13,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Клетка").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Азольский").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 14,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Белый пароход").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Айтматов").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 15,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "И дольше века длится день...").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Айтматов").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 16,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Пегий пес, бегущий краем моря (сборник)").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Айтматов").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 17,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Плаха").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Айтматов").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 18,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Тавро Кассандры").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Айтматов").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 19,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Аленький цветочек. Три пояса.").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Аксаков").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 20,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Аленький цветочек. Три пояса.").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Жуковский").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 21,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Детские годы Багрова-внука").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Аксаков").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 22,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Семейная хроника").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Аксаков").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 23,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Остров Крым").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Аксёнов").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 24,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Новеллы (сборник)").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Акутагава").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 25,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Заговор. Святая Елена, маленький остров. Повести (сборник)").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Алданов").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 26,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Домовёнок Кузька (сборник)").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Александрова").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 27,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "У войны не женское лицо").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Алексиевич").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 28,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Большой Мольн").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Фурнье").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 3,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Деревянные кони. Повести. Рассказы").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Абрамов").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 4,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Женщина в песках").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Абэ").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 5,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Житие протопопа Аввакума, им самим написанное, и другие его сочинения").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Кондратьев").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 6,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Собрание сочинений в 6 томах. Том 5. Чудеса в решете").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Аверченко").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 7,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Молодняк").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Аверченко").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 8,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Тайна двух океанов").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Адамов").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 9,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Хатынская повесть").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Адамович").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 10,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Хатынская повесть. Каратели (сборник)").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Адамович").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 11,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Обитатели холмов").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Адамс").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 12,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Три закона роботехники (сборник)").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Азимов").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 13,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Клетка").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Азольский").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
 
-           new BookToAuthor
-            {
-               Id = 29,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Маргарита Алигер. Избранное").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Алигер").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 14,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Белый пароход").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Айтматов").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 15,
+                             BookId = Books.FirstOrDefault(x => x.Name == "И дольше века длится день...").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Айтматов").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 16,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Пегий пес, бегущий краем моря (сборник)").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Айтматов").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 17,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Плаха").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Айтматов").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 18,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Тавро Кассандры").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Айтматов").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 19,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Аленький цветочек. Три пояса.").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Аксаков").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 20,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Аленький цветочек. Три пояса.").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Жуковский").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 21,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Детские годы Багрова-внука").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Аксаков").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 22,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Семейная хроника").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Аксаков").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 23,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Остров Крым").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Аксёнов").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 24,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Новеллы (сборник)").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Акутагава").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 25,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Заговор. Святая Елена, маленький остров. Повести (сборник)").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Алданов").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 26,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Домовёнок Кузька (сборник)").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Александрова").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 27,
+                             BookId = Books.FirstOrDefault(x => x.Name == "У войны не женское лицо").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Алексиевич").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 28,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Большой Мольн").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Фурнье").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
 
-           new BookToAuthor
-            {
-               Id = 30,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Генералы песчаных карьеров").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Амаду").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-           new BookToAuthor
-            {
-               Id = 31,
-                BookId = Publishers.FirstOrDefault(x => x.Name == "Дата Туташхиа").Id,
-                AuthorId = Authors.FirstOrDefault(x => x.LastName == "Амирэджиби").Id,
-                AddUserId = SD.UserIdForInitialData,
-                AddTime  = DateTime.Now,
-            },
-        };
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 29,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Маргарита Алигер. Избранное").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Алигер").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 30,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Генералы песчаных карьеров").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Амаду").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                bookToAuthors.Add(
+                         new BookToAuthor
+                         {
+                             Id = 31,
+                             BookId = Books.FirstOrDefault(x => x.Name == "Дата Туташхиа").Id,
+                             AuthorId = Authors.FirstOrDefault(x => x.LastName == "Амирэджиби").Id,
+                             AddUserId = SD.UserIdForInitialData,
+                             AddTime = DateTime.Now,
+                         });
+                return bookToAuthors;
+            }
+        }
     }
 }

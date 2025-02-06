@@ -19,7 +19,7 @@ namespace Catalog_DataAccess.CatalogDB
         [Comment("ИД книги")]
         public int BookId { get; set; }
         [ForeignKey("BookId")]
-        public Book Book { get; set; }
+        public virtual Book Book { get; set; }
 
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Catalog_DataAccess.CatalogDB
         /// Статус книги
         /// </summary>
         [ForeignKey("StateId")]
-        public State State { get; set; }
+        public virtual State State { get; set; }
 
         /// <summary>
         /// ИД комментария к статусу состояния книги

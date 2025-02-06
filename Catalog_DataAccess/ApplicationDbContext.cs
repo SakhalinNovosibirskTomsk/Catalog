@@ -1,4 +1,5 @@
-﻿using Catalog_DataAccess.CatalogDB;
+﻿using Catalog_Common;
+using Catalog_DataAccess.CatalogDB;
 using Microsoft.EntityFrameworkCore;
 
 namespace Catalog_DataAccess
@@ -12,7 +13,8 @@ namespace Catalog_DataAccess
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-
+            if (SD.dbConnectionMode == SD.DbConnectionMode.PostgreSQL)
+                AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         }
 
         /// <summary>
@@ -43,7 +45,8 @@ namespace Catalog_DataAccess
         /// <summary>
         /// Связь книг с акторами
         /// </summary>
-        public DbSet<BookToAuthor> BooksToAuthors { get; set; }
+        public DbSet<BookToAuthor> BookToAuthors { get; set; }
 
     }
+
 }
