@@ -1,4 +1,6 @@
-﻿using Catalog_Common;
+﻿using Catalog_Business.Repository;
+using Catalog_Business.Repository.IRepository;
+using Catalog_Common;
 using Catalog_DataAccess;
 using Catalog_DataAccess.DbInitializer;
 using Microsoft.EntityFrameworkCore;
@@ -23,18 +25,21 @@ namespace Catalog_WebAPI
         {
             services.AddControllers().AddMvcOptions(x =>
                 x.SuppressAsyncSuffixInActionNames = false);
+
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
+
             services.AddScoped<IDbInitializer, DbInitializer>();
+            services.AddScoped<IStateRepository, StateRepository>();
+            services.AddScoped<IBookRepository, BookRepository>();
+            services.AddScoped<IBookInstanceRepository, BookInstanceRepository>();
+            services.AddScoped<IBookToAuthorRepository, BookToAuthorRepository>();
+            services.AddScoped<IPublisherRepository, PublisherRepository>();
 
-            //services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-            //services.AddScoped(typeof(IPartnerPromoCodeLimitRepository), typeof(PartnerPromoCodeLimitRepository));            
-            //services.AddDbContext<DataContext>(x =>
-            //{
-            //    x.UseSqlite("Filename=PromoCodeFactoryDb.sqlite");
-            //    //x.UseNpgsql(Configuration.GetConnectionString("PromoCodeFactoryDb"));
-            //    x.UseSnakeCaseNamingConvention();
-            //    x.UseLazyLoadingProxies();
-            //});
 
+            //services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             var dbConnectionMode = Configuration.GetValue<string>("DbConnectionMode");
 
@@ -80,11 +85,11 @@ namespace Catalog_WebAPI
                     }
             }
 
-            services.AddOpenApiDocument(options =>
-            {
-                options.Title = "Catalog (Library API Doc";
-                options.Version = "1.0";
-            });
+            //services.AddOpenApiDocument(options =>
+            //{
+            //    options.Title = "Catalog (Library API Doc)";
+            //    options.Version = "1.0";
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -92,6 +97,8 @@ namespace Catalog_WebAPI
         {
             if (env.IsDevelopment())
             {
+                app.UseSwagger();
+                app.UseSwaggerUI();
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -99,11 +106,13 @@ namespace Catalog_WebAPI
                 app.UseHsts();
             }
 
-            app.UseOpenApi();
-            app.UseSwaggerUi(x =>
-            {
-                x.DocExpansion = "list";
-            });
+            //app.UseOpenApi();         
+
+            //app.UseSwaggerUI(x =>
+            //{
+            //    //x.DocExpansion = "list";
+            //    x.SwaggerEndpoint("/openapi/v1.json", "Catalog API ver. 1");
+            //});
 
             app.UseHttpsRedirection();
 

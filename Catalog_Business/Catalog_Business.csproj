@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Catalog_DataAccess\Catalog_DataAccess.csproj" />
+    <ProjectReference Include="..\Catalog_Models\Catalog_Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
   </ItemGroup>
 
 </Project>
