@@ -9,7 +9,7 @@ namespace Catalog_Business.Repository
     : IRepository<T>
     where T : BaseEntity
     {
-        private readonly ApplicationDbContext _db;
+        protected readonly ApplicationDbContext _db;
 
         public Repository(ApplicationDbContext db)
         {

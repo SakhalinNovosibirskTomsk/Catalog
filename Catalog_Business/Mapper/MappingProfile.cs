@@ -8,7 +8,8 @@ namespace Catalog_Business.Mapper
     {
         public MappingProfile()
         {
-            CreateMap<State, StateItemResponse>().ReverseMap();
+            CreateMap<State, StateItemResponse>();
+            CreateMap<State, StateItemCreateRequest>();
         }
     }
 }

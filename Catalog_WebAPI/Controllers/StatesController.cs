@@ -4,6 +4,7 @@ using Catalog_Common;
 using Catalog_DataAccess.CatalogDB;
 using Catalog_Models.CatalogModels;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace Catalog_WebAPI.Controllers
 {
@@ -23,13 +24,17 @@ namespace Catalog_WebAPI.Controllers
             _mapper = mapper;
         }
 
-
+        /// <summary>
+        /// Получить список всех статусов экземпляров книг
+        /// </summary>
+        /// <returns>Возвращает список всех статусов - объектов типа StateItemResponse</returns>
+        /// <response code="200">Успешное выполнение</response>
         [HttpGet("All")]
+        [ProducesResponseType(typeof(List<StateItemResponse>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<List<StateItemResponse>>> GetAllStatesAsync()
         {
             var gotStates = await GetStatesAsync(SD.GetAllItems.All);
             return Ok(_mapper.Map<IEnumerable<State>, IEnumerable<StateItemResponse>>(gotStates));
-            return Ok();
         }
 
         [HttpGet("AllInArchive")]
@@ -37,7 +42,6 @@ namespace Catalog_WebAPI.Controllers
         {
             var gotStates = await GetStatesAsync(SD.GetAllItems.ArchiveOnly);
             return Ok(_mapper.Map<IEnumerable<State>, IEnumerable<StateItemResponse>>(gotStates));
-            return Ok();
         }
 
         [HttpGet("AllNotInArchive")]
@@ -75,7 +79,7 @@ namespace Catalog_WebAPI.Controllers
 
 
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<State>> GetSateByIdAsync(int id)
+        public async Task<ActionResult<StateItemResponse>> GetSateByIdAsync(int id)
         {
             var state = await _stateRepository.GetByIdAsync(id);
 
@@ -86,22 +90,105 @@ namespace Catalog_WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<State>> CreateStateAsync(StateItemRequest request)
+        public async Task<ActionResult<int>> CreateStateAsync(StateItemCreateRequest request)
         {
+            if (request.IsInitialState)
+            {
+                var initialState = _stateRepository.GetIsInitialStateAsync();
+                if (initialState != null)
+                    return BadRequest("Попытка добавить статус с полем IsInitialState = true. В БД уже есть статус с IsInitialState = true. Двух таких статусов быть не может.");
+            }
 
-            return NoContent();
+            var stateFoundByName = _stateRepository.GetStateByNameAsync(request.Name);
+            if (stateFoundByName != null)
+                return BadRequest("Уже есть статус с наименованием \"" + request.Name + "\" (ИД = " + stateFoundByName.Id.ToString() + "). Двух статусов с оджинаковым наименованием быть не может.");
+
+            var addedState = await _stateRepository.AddAsync(
+                new State
+                {
+                    Name = request.Name,
+                    Description = request.Description,
+                    IsNeedComment = request.IsNeedComment,
+                    IsInitialState = request.IsInitialState,
+                    IsArchive = request.IsArchive,
+                });
+
+            var routVar = "";
+            if (Request != null)
+            {
+                routVar = new UriBuilder(Request.Scheme, Request.Host.Host, (int)Request.Host.Port, Request.Path.Value).ToString()
+                    + "/" + addedState.Id.ToString();
+            }
+            return Created(routVar, addedState.Id);
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> EditStateAsync(int id, StateItemRequest request)
+        public async Task<ActionResult<StateItemResponse>> EditStateAsync(int id, StateItemUpdateRequest request)
         {
-            return NoContent();
+            var foundState = await _stateRepository.GetByIdAsync(id);
+            if (foundState == null)
+                NotFound("Статус с Id = " + id.ToString() + " не найден.");
+
+            var foundStateByName = await _stateRepository.GetStateByNameAsync(request.Name);
+
+            if (foundStateByName.Id != foundState.Id)
+                BadRequest("Уже есть статус с наименованием = " + request.Name + " (ИД = " + foundStateByName.Id.ToString() + ")");
+
+            if (foundState.Name.Trim().ToUpper() != request.Name.Trim().ToUpper())
+                foundState.Name = request.Name;
+            if (foundState.Description.Trim().ToUpper() != request.Description.Trim().ToUpper())
+                foundState.Description = request.Description;
+            if (foundState.IsNeedComment != request.IsNeedComment)
+                foundState.IsNeedComment = request.IsNeedComment;
+
+            var updatedState = await _stateRepository.UpdateAsync(foundState);
+            return Ok(_mapper.Map<State, StateItemResponse>(updatedState));
         }
 
-        [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> DeleteStateAsync(Guid id)
+        [HttpPut("DeleteToArchive/{id:int}")]
+        public async Task<ActionResult<StateItemResponse>> DeleteStateToArchiveAsync(int id)
         {
-            return NoContent();
+            var foundState = await _stateRepository.GetByIdAsync(id);
+            if (foundState == null)
+                NotFound("Статус с Id = " + id.ToString() + " не найден.");
+            if (foundState.IsArchive == true)
+                BadRequest("Статус с Id = " + id.ToString() + " уже в архиве.");
+            foundState.IsArchive = true;
+            var updatedState = await _stateRepository.UpdateAsync(foundState);
+            return Ok(_mapper.Map<State, StateItemResponse>(updatedState));
+        }
+
+        [HttpPut("RestoreFromArchive/{id:int}")]
+        public async Task<ActionResult<StateItemResponse>> RestoreStateFromArchiveAsync(int id)
+        {
+            var foundState = await _stateRepository.GetByIdAsync(id);
+            if (foundState == null)
+                NotFound("Статус с Id = " + id.ToString() + " не найден.");
+            if (foundState.IsArchive != true)
+                BadRequest("Статус с Id = " + id.ToString() + " не находится в архиве. Невозможно восстановить его из архива");
+            foundState.IsArchive = false;
+            return Ok(await _stateRepository.UpdateAsync(foundState));
+        }
+
+        [HttpPut("SetIsInitialState/{id:int}")]
+        public async Task<ActionResult<StateItemResponse>> SetIsInitialStateById(int id)
+        {
+            var foundState = await _stateRepository.GetByIdAsync(id);
+            if (foundState == null)
+                NotFound("Статус с Id = " + id.ToString() + " не найден.");
+            if (foundState.IsInitialState == true)
+                BadRequest("Статус с Id = " + id.ToString() + " уже является статусом по умолчанию.");
+
+            var currentInitialState = await _stateRepository.GetIsInitialStateAsync();
+
+            if (currentInitialState != null)
+            {
+                currentInitialState.IsInitialState = false;
+                await _stateRepository.UpdateAsync(foundState);
+            }
+            foundState.IsInitialState = true;
+            var updatedState = await _stateRepository.UpdateAsync(foundState);
+            return Ok(_mapper.Map<State, StateItemResponse>(updatedState));
         }
     }
 }
