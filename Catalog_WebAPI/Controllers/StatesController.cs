@@ -127,12 +127,12 @@ namespace Catalog_WebAPI.Controllers
         {
             if (request.IsInitialState)
             {
-                var initialState = _stateRepository.GetIsInitialStateAsync();
+                var initialState = await _stateRepository.GetIsInitialStateAsync();
                 if (initialState != null)
                     return BadRequest("Попытка добавить статус с полем IsInitialState = true. В БД уже есть статус с IsInitialState = true. Двух таких статусов быть не может.");
             }
 
-            var stateFoundByName = _stateRepository.GetStateByNameAsync(request.Name);
+            var stateFoundByName = await _stateRepository.GetStateByNameAsync(request.Name);
             if (stateFoundByName != null)
                 return BadRequest("Уже есть статус с наименованием \"" + request.Name + "\" (ИД = " + stateFoundByName.Id.ToString() + "). Двух статусов с оджинаковым наименованием быть не может.");
 
@@ -172,12 +172,13 @@ namespace Catalog_WebAPI.Controllers
         {
             var foundState = await _stateRepository.GetByIdAsync(id);
             if (foundState == null)
-                NotFound("Статус с Id = " + id.ToString() + " не найден.");
+                return NotFound("Статус с Id = " + id.ToString() + " не найден.");
 
             var foundStateByName = await _stateRepository.GetStateByNameAsync(request.Name);
 
-            if (foundStateByName.Id != foundState.Id)
-                BadRequest("Уже есть статус с наименованием = " + request.Name + " (ИД = " + foundStateByName.Id.ToString() + ")");
+            if (foundStateByName != null)
+                if (foundStateByName.Id != foundState.Id)
+                    return BadRequest("Уже есть статус с наименованием = " + request.Name + " (ИД = " + foundStateByName.Id.ToString() + ")");
 
             if (foundState.Name.Trim().ToUpper() != request.Name.Trim().ToUpper())
                 foundState.Name = request.Name;
@@ -208,9 +209,11 @@ namespace Catalog_WebAPI.Controllers
         {
             var foundState = await _stateRepository.GetByIdAsync(id);
             if (foundState == null)
-                NotFound("Статус с Id = " + id.ToString() + " не найден.");
+                return NotFound("Статус с Id = " + id.ToString() + " не найден.");
             if (foundState.IsArchive == true)
-                BadRequest("Статус с Id = " + id.ToString() + " уже в архиве.");
+                return BadRequest("Статус с Id = " + id.ToString() + " уже в архиве.");
+            if (foundState.IsInitialState == true)
+                return BadRequest("Статус с Id = " + id.ToString() + " является статусом по умолчанию для новых экземпляров (IsInitialState = true). Чтобы удалить его в архив нужно выбрать другой статус к качестве статуса по умолчанию.");
             foundState.IsArchive = true;
             var updatedState = await _stateRepository.UpdateAsync(foundState);
             return Ok(_mapper.Map<State, StateItemResponse>(updatedState));
@@ -233,9 +236,9 @@ namespace Catalog_WebAPI.Controllers
         {
             var foundState = await _stateRepository.GetByIdAsync(id);
             if (foundState == null)
-                NotFound("Статус с Id = " + id.ToString() + " не найден.");
+                return NotFound("Статус с Id = " + id.ToString() + " не найден.");
             if (foundState.IsArchive != true)
-                BadRequest("Статус с Id = " + id.ToString() + " не находится в архиве. Невозможно восстановить его из архива");
+                return BadRequest("Статус с Id = " + id.ToString() + " не находится в архиве. Невозможно восстановить его из архива");
             foundState.IsArchive = false;
             return Ok(await _stateRepository.UpdateAsync(foundState));
         }
@@ -257,9 +260,9 @@ namespace Catalog_WebAPI.Controllers
         {
             var foundState = await _stateRepository.GetByIdAsync(id);
             if (foundState == null)
-                NotFound("Статус с Id = " + id.ToString() + " не найден.");
-            if (foundState.IsInitialState == true)
-                BadRequest("Статус с Id = " + id.ToString() + " уже является статусом по умолчанию.");
+                return NotFound("Статус с Id = " + id.ToString() + " не найден.");
+            if (foundState.IsInitialState)
+                return BadRequest("Статус с Id = " + id.ToString() + " уже является статусом по умолчанию.");
 
             var currentInitialState = await _stateRepository.GetIsInitialStateAsync();
 

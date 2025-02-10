@@ -1,7 +1,7 @@
 ﻿using Catalog_Business.Repository.IRepository;
 using Catalog_DataAccess;
 using Catalog_DataAccess.CatalogDB;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Catalog_Business.Repository
 {
@@ -13,13 +13,15 @@ namespace Catalog_Business.Repository
         }
         public async Task<State> GetStateByNameAsync(string name)
         {
-            var state = await _db.States.FirstOrDefaultAsync(s => s.Name.Trim().ToUpper() == name.Trim().ToUpper());
+            var state = await _db.States.FirstOrDefaultAsync(s => s.Name == name);
+
+            //var state = await _db.States.FirstOrDefaultAsync(item => string.Compare(item.Name, name, true) == 0);
             return state;
         }
 
         public async Task<State> GetIsInitialStateAsync()
         {
-            var state = await _db.States.FirstOrDefaultAsync(s => s.IsInitialState == true);
+            var state = await _db.States.FirstOrDefaultAsync(s => s.IsInitialState);
             return state;
         }
 
