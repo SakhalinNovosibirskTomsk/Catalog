@@ -1,4 +1,4 @@
-﻿namespace Catalog_Models.CatalogModels
+﻿namespace Catalog_Models.CatalogModels.State
 {
     public class StateItemResponse
     {

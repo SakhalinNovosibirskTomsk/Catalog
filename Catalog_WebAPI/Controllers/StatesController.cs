@@ -2,7 +2,7 @@
 using Catalog_Business.Repository.IRepository;
 using Catalog_Common;
 using Catalog_DataAccess.CatalogDB;
-using Catalog_Models.CatalogModels;
+using Catalog_Models.CatalogModels.State;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -94,7 +94,7 @@ namespace Catalog_WebAPI.Controllers
         }
 
         /// <summary>
-        /// Получить чтатус по ИД
+        /// Получить cтатус по ИД
         /// </summary>
         /// <param name="id">ИД статуса</param>
         /// <returns>Возвращает найденый по ИД статус - объект типа StateItemResponse</returns>
@@ -109,6 +109,27 @@ namespace Catalog_WebAPI.Controllers
 
             if (state == null)
                 return NotFound("Статус с ID = " + id.ToString() + " не найден!");
+
+            return Ok(_mapper.Map<State, StateItemResponse>(state));
+        }
+
+
+        /// <summary>
+        /// Получить cтатус по наименованию
+        /// </summary>
+        /// <param name="name">Наименование статуса</param>
+        /// <returns>Возвращает найденый по наименование статус - объект типа StateItemResponse</returns>
+        /// <response code="200">Успешное выполнение</response>
+        /// <response code="404">Статус с заданным наименованием не найден</response>
+        [HttpGet("GetByName/{name:string}")]
+        [ProducesResponseType(typeof(StateItemResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<StateItemResponse>> GetStateByNameAsync(string name)
+        {
+            var state = await _stateRepository.GetStateByNameAsync(name);
+
+            if (state == null)
+                return NotFound("Статус с наименованием \"" + name + "\" не найден!");
 
             return Ok(_mapper.Map<State, StateItemResponse>(state));
         }
@@ -134,7 +155,7 @@ namespace Catalog_WebAPI.Controllers
 
             var stateFoundByName = await _stateRepository.GetStateByNameAsync(request.Name);
             if (stateFoundByName != null)
-                return BadRequest("Уже есть статус с наименованием \"" + request.Name + "\" (ИД = " + stateFoundByName.Id.ToString() + "). Двух статусов с оджинаковым наименованием быть не может.");
+                return BadRequest("Уже есть статус с наименованием \"" + request.Name + "\" (ИД = " + stateFoundByName.Id.ToString() + "). Двух статусов с одинаковым наименованием быть не может.");
 
             var addedState = await _stateRepository.AddAsync(
                 new State
@@ -180,9 +201,12 @@ namespace Catalog_WebAPI.Controllers
                 if (foundStateByName.Id != foundState.Id)
                     return BadRequest("Уже есть статус с наименованием = " + request.Name + " (ИД = " + foundStateByName.Id.ToString() + ")");
 
-            if (foundState.Name.Trim().ToUpper() != request.Name.Trim().ToUpper())
+            // TODO Сделать и протестировать регистронезависимое сравнение строк
+            if (foundState.Name != request.Name)
                 foundState.Name = request.Name;
-            if (foundState.Description.Trim().ToUpper() != request.Description.Trim().ToUpper())
+
+            // TODO Сделать и протестировать регистронезависимое сравнение строк
+            if (foundState.Description != request.Description)
                 foundState.Description = request.Description;
             if (foundState.IsNeedComment != request.IsNeedComment)
                 foundState.IsNeedComment = request.IsNeedComment;
