@@ -68,7 +68,7 @@ namespace Catalog_DataAccess.CatalogDB
         /// <summary>
         /// Является ли запись аврхивной
         /// </summary>
-        [MSEF.Comment("Признак является ли запись аврхивной")]
+        [MSEF.Comment("Признак является ли запись архивной")]
         public bool IsArchive { get; set; } = false;
     }
 }

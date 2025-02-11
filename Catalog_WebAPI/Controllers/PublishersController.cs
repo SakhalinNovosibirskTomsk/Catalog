@@ -63,6 +63,8 @@ namespace Catalog_WebAPI.Controllers
             return Ok(_mapper.Map<IEnumerable<Publisher>, IEnumerable<PublisherItemResponse>>(gotPublishers));
         }
 
+
+        // TODO Возможно стоит вынести из контроллера в метод репозитория
         /// <summary>
         /// Вспомогательный метод возвращающий список всех издателей, издателей не в архиве или издателей в архиве в зависимости от входного параметра
         /// </summary>
