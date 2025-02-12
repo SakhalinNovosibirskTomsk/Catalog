@@ -124,7 +124,7 @@ namespace Catalog_WebAPI.Controllers
         /// <param name="lastname"> Фамилия автора </param>
         /// <param name="middlename"> Отчество автора </param>
         /// <returns>Возвращает найденого автора - объект типа AuthorItemResponse</returns>
-        [HttpGet("GetByName/{firstname:string}/{lastname:string}/{middlename:string}")]
+        [HttpGet("GetByName/{firstname:alpha}/{lastname:alpha}/{middlename:alpha}")]
         [ProducesResponseType(typeof(AuthorItemResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<AuthorItemResponse>> GetAuthorByFullNameAsync(string firstname, string lastname, string? middlename)

@@ -31,6 +31,7 @@ namespace Catalog_WebAPI
 
             services.AddScoped<IDbInitializer, DbInitializer>();
             services.AddScoped<IStateRepository, StateRepository>();
+            services.AddScoped<IAuthorRepository, AuthorRepository>();
             services.AddScoped<IBookRepository, BookRepository>();
             services.AddScoped<IBookInstanceRepository, BookInstanceRepository>();
             services.AddScoped<IBookToAuthorRepository, BookToAuthorRepository>();

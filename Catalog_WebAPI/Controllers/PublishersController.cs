@@ -121,7 +121,7 @@ namespace Catalog_WebAPI.Controllers
         /// <returns>Возвращает найденого по наименованию издателя - объект типа PublisherItemResponse</returns>
         /// <response code="200">Успешное выполнение</response>
         /// <response code="404">Издатель с заданным наименованием не найден</response>
-        [HttpGet("GetByName/{name:string}")]
+        [HttpGet("GetByName/{name:alpha}")]
         [ProducesResponseType(typeof(PublisherItemResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<PublisherItemResponse>> GetPublisherByNameAsync(string name)

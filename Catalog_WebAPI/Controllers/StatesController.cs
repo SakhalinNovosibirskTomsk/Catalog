@@ -123,7 +123,7 @@ namespace Catalog_WebAPI.Controllers
         /// <returns>Возвращает найденый по наименование статус - объект типа StateItemResponse</returns>
         /// <response code="200">Успешное выполнение</response>
         /// <response code="404">Статус с заданным наименованием не найден</response>
-        [HttpGet("GetByName/{name:string}")]
+        [HttpGet("GetByName/{name:alpha}")]
         [ProducesResponseType(typeof(StateItemResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<StateItemResponse>> GetStateByNameAsync(string name)
