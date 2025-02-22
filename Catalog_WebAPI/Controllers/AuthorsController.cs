@@ -201,16 +201,13 @@ namespace Catalog_WebAPI.Controllers
                 if (foundAuthorByFullName.Id != foundAuthor.Id)
                     return BadRequest("Уже есть автор \"" + request.FirstName + " " + request.LastName + " " + request.MiddleName + "\" (ИД = " + foundAuthorByFullName.Id.ToString() + ")");
 
-            // TODO Сделать и протестировать регистронезависимое сравнение строк
-            if (foundAuthor.FirstName != request.FirstName)
+            if (foundAuthor.FirstName.Trim().ToUpper() != request.FirstName.Trim().ToUpper())
                 foundAuthor.FirstName = request.FirstName;
 
-            // TODO Сделать и протестировать регистронезависимое сравнение строк
-            if (foundAuthor.LastName != request.LastName)
+            if (foundAuthor.LastName.Trim().ToUpper() != request.LastName.Trim().ToUpper())
                 foundAuthor.LastName = request.LastName;
 
-            // TODO Сделать и протестировать регистронезависимое сравнение строк
-            if (foundAuthor.MiddleName != request.MiddleName)
+            if (foundAuthor.MiddleName.Trim().ToUpper() != request.MiddleName.Trim().ToUpper())
                 foundAuthor.MiddleName = request.MiddleName;
 
             if (foundAuthor.IsForeign != request.IsForeign)

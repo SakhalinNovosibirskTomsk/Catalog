@@ -123,7 +123,7 @@ namespace Catalog_WebAPI.Controllers
         /// <returns>Возвращает найденый по наименование статус - объект типа StateItemResponse</returns>
         /// <response code="200">Успешное выполнение</response>
         /// <response code="404">Статус с заданным наименованием не найден</response>
-        [HttpGet("GetByName/{name:alpha}")]
+        [HttpGet("GetByName/{name}")]
         [ProducesResponseType(typeof(StateItemResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<StateItemResponse>> GetStateByNameAsync(string name)
@@ -204,11 +204,11 @@ namespace Catalog_WebAPI.Controllers
                     return BadRequest("Уже есть статус с наименованием = " + request.Name + " (ИД = " + foundStateByName.Id.ToString() + ")");
 
             // TODO Сделать и протестировать регистронезависимое сравнение строк
-            if (foundState.Name != request.Name)
+            if (foundState.Name.Trim().ToUpper() != request.Name.Trim().ToUpper())
                 foundState.Name = request.Name;
 
             // TODO Сделать и протестировать регистронезависимое сравнение строк
-            if (foundState.Description != request.Description)
+            if (foundState.Description.Trim().ToUpper() != request.Description.Trim().ToUpper())
                 foundState.Description = request.Description;
             if (foundState.IsNeedComment != request.IsNeedComment)
                 foundState.IsNeedComment = request.IsNeedComment;

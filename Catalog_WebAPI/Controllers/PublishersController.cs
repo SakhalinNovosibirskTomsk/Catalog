@@ -195,8 +195,7 @@ namespace Catalog_WebAPI.Controllers
                 if (foundPublisherByName.Id != foundPublisher.Id)
                     return BadRequest("Уже есть издатель с наименованием = " + request.Name + " (ИД = " + foundPublisherByName.Id.ToString() + ")");
 
-            // TODO Сделать и протестировать регистронезависимое сравнение строк
-            if (foundPublisher.Name != request.Name)
+            if (foundPublisher.Name.Trim().ToUpper() != request.Name.Trim().ToUpper())
                 foundPublisher.Name = request.Name;
 
             var updatedPublisher = await _publisherRepository.UpdateAsync(foundPublisher);

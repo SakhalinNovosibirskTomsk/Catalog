@@ -18,9 +18,7 @@ namespace Catalog_Business.Repository
         /// <returns>Возвращает найденого по наименованию издателя - объект Publisher</returns>
         public async Task<Publisher> GetPublisherByNameAsync(string name)
         {
-
-            // TODO Сделать сравнение строк регистронезависимым и без зависимости от лидирующих и концевых пробелов
-            var publisher = await _db.Publishers.FirstOrDefaultAsync(s => s.Name == name);
+            var publisher = await _db.Publishers.FirstOrDefaultAsync(s => s.Name.Trim().ToUpper() == name.Trim().ToUpper());
             return publisher;
         }
     }

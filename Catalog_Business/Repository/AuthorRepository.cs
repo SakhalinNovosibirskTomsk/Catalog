@@ -21,8 +21,9 @@ namespace Catalog_Business.Repository
         public async Task<Author> GetAuthorByFullNameAsync(string firstName, string lastName, string? middleName)
         {
 
-            // TODO Сделать сравнение строк регистронезависимым и без зависимости от лидирующих и концевых пробелов
-            var author = await _db.Authors.FirstOrDefaultAsync(u => u.FirstName == firstName && u.LastName == lastName && u.MiddleName == middleName);
+            var author = await _db.Authors.FirstOrDefaultAsync(u => u.FirstName.Trim().ToUpper() == firstName.Trim().ToUpper()
+                        && u.LastName.Trim().ToUpper() == lastName.Trim().ToUpper()
+                        && u.MiddleName.Trim().ToUpper() == middleName.Trim().ToUpper());
             return author;
         }
     }

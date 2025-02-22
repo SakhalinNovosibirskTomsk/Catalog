@@ -24,10 +24,8 @@ namespace Catalog_Business.Repository
         public async Task<State> GetStateByNameAsync(string name)
         {
 
-            // TODO Сделать сравнение строк регистронезависимым и без зависимости от лидирующих и концевых пробелов
-            var state = await _db.States.FirstOrDefaultAsync(s => s.Name == name);
+            var state = await _db.States.FirstOrDefaultAsync(s => s.Name.Trim().ToUpper() == name.Trim().ToUpper());
 
-            //var state = await _db.States.FirstOrDefaultAsync(item => string.Compare(item.Name, name, true) == 0);
             return state;
         }
 
