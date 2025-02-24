@@ -42,10 +42,6 @@ namespace Catalog_Models.CatalogModels.Book
         /// </summary>
         public List<BookToAuthorItemCreateUpdateRequest> BookAuthors { get; set; }
 
-        /// <summary>
-        /// Признак удаления книги в архив
-        /// </summary>        
-        public bool IsArchive { get; set; } = false;
 
     }
 }

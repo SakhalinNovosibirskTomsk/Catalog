@@ -19,12 +19,17 @@ namespace Catalog_WebAPI.Controllers
     {
         private readonly IPublisherRepository _publisherRepository;
         private readonly IAuthorRepository _authorRepository;
+        private readonly IBookToAuthorRepository _bookToAuthorRepository;
         private readonly IBookRepository _bookRepository;
         private readonly IMapper _mapper;
-        public BooksController(IPublisherRepository publisherRepository, IAuthorRepository authorRepository, IBookRepository bookRepository, IMapper mapper)
+        public BooksController(IPublisherRepository publisherRepository,
+            IAuthorRepository authorRepository,
+            IBookToAuthorRepository bookToAuthorRepository,
+            IBookRepository bookRepository, IMapper mapper)
         {
             _publisherRepository = publisherRepository;
             _authorRepository = authorRepository;
+            _bookToAuthorRepository = bookToAuthorRepository;
             _bookRepository = bookRepository;
             _mapper = mapper;
 
@@ -109,42 +114,88 @@ namespace Catalog_WebAPI.Controllers
             return Ok(_mapper.Map<Book, BookItemResponse>(book));
         }
 
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Stopped
+
 
 
         /// <summary>
-        /// Создание нового издателя
+        /// Создание новой книги
         /// </summary>
-        /// <param name="request">Параметры создаваемого издателя - объект типа PublisherItemCreateUpdateRequest</param>
-        /// <returns>Возвращает созданого издателя - объект типа PublisherItemResponse</returns>
+        /// <param name="request">Параметры создаваемой книги - объект типа BookItemCreateUpdateRequest</param>
+        /// <returns>Возвращает созданую книгу - объект типа BookItemResponse</returns>
         /// <response code="201">Успешное выполнение. Издатель создан</response>
-        /// <response code="400">Не удалось добавить издателя. Причина описана в ответе</response>  
+        /// <response code="400">Не удалось добавить книгу. Причина описана в ответе</response>  
         [HttpPost]
         [ProducesResponseType(typeof(PublisherItemResponse), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult<PublisherItemResponse>> CreatePublisherAsync(PublisherItemCreateUpdateRequest request)
+        public async Task<ActionResult<BookItemResponse>> CreatePublisherAsync(BookItemCreateUpdateRequest request)
         {
-            var publisherFoundByName = await _publisherRepository.GetPublisherByNameAsync(request.Name);
-            if (publisherFoundByName != null)
-                return BadRequest("Уже есть издатель с наименованием \"" + request.Name + "\" (ИД = " + publisherFoundByName.Id.ToString() + "). Двух издателей с одинаковым наименованием быть не может.");
+            var bookFoundByName = await _bookRepository.GetBookByNameAsync(request.Name);
+            if (bookFoundByName != null)
+                return BadRequest("Уже есть книга с наименованием \"" + request.Name + "\" (ИД = " + bookFoundByName.Id.ToString() + "). Двух книг с одинаковым наименованием быть не может.");
 
-            var addedPublisher = await _publisherRepository.AddAsync(
-                new Publisher
+            if (String.IsNullOrWhiteSpace(request.PublisherName))
+            {
+                return BadRequest("Наименование издателя пустое");
+            }
+
+            var foundPublisherByName = await _publisherRepository.GetPublisherByNameAsync(request.PublisherName);
+
+            if (foundPublisherByName == null)
+                return BadRequest("Издатель с наименованием \"" + request.PublisherName + "\" не найден в справочнике издателей.");
+
+            if (request.BookAuthors == null || request.BookAuthors.Count <= 0)
+                return BadRequest("У книги не указан автор.");
+
+            List<Author> authorsFoundByNameList = new List<Author>();
+            foreach (var bookAuthor in request.BookAuthors)
+            {
+                var author = await _authorRepository.GetAuthorByFullNameAsync(firstName: bookAuthor.FirstName, lastName: bookAuthor.LastName, middleName: bookAuthor.MiddleName);
+
+                if (author == null)
+                {
+                    return BadRequest("Автор \""
+                        + (String.IsNullOrWhiteSpace(bookAuthor.FirstName) ? "" : bookAuthor.FirstName)
+                        + (String.IsNullOrWhiteSpace(bookAuthor.LastName) ? "" : bookAuthor.LastName)
+                        + (String.IsNullOrWhiteSpace(bookAuthor.MiddleName) ? "" : bookAuthor.MiddleName)
+                        + "\" не найден в справочнике авторов.");
+                }
+
+                authorsFoundByNameList.Add(author);
+            }
+
+            var addedBook = await _bookRepository.AddAsync(
+                new Book
                 {
                     Name = request.Name,
-                    // TODO Пользователя добавившего запись в будущем нужно брать реального
+                    ISBN = request.ISBN,
+                    PublisherId = foundPublisherByName.Id,
+                    PublishDate = request.PublishDate,
+                    EBookLink = "",
+                    EBookDownloadCount = 0,
                     AddUserId = SD.UserIdForInitialData,
                     AddTime = DateTime.Now,
                     IsArchive = false,
                 });
 
+            foreach (var author in authorsFoundByNameList)
+            {
+                var addedBookToAuthor = await _bookToAuthorRepository.AddAsync(
+                new BookToAuthor
+                {
+                    BookId = addedBook.Id,
+                    AuthorId = author.Id,
+                    AddUserId = SD.UserIdForInitialData,
+                    AddTime = DateTime.Now,
+                });
+            }
+
             var routVar = "";
             if (Request != null)
             {
                 routVar = new UriBuilder(Request.Scheme, Request.Host.Host, (int)Request.Host.Port, Request.Path.Value).ToString()
-                    + "/" + addedPublisher.Id.ToString();
+                    + "/" + addedBook.Id.ToString();
             }
-            return Created(routVar, _mapper.Map<Publisher, PublisherItemResponse>(addedPublisher));
+            return Created(routVar, _mapper.Map<Book, BookItemResponse>(addedBook));
         }
 
         /// <summary>
