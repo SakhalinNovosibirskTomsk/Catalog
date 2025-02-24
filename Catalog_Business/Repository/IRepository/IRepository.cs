@@ -34,21 +34,21 @@ namespace Catalog_Business.Repository.IRepository
         /// </summary>
         /// <param name="entity">Сущность типа T</param>
         /// <returns>Объект типа Task</returns>
-        Task<T> AddAsync(T entity);
+        Task<T> AddAsync(T entity, bool? saveChanges = true);
 
         /// <summary>
         /// Обновить сущность типа Т
         /// </summary>
         /// <param name="entity">Обновляемый объект</param>
         /// <returns>Объект типа Task</returns>
-        Task<T> UpdateAsync(T entity);
+        Task<T> UpdateAsync(T entity, bool? saveChanges = true);
 
         /// <summary>
         /// Удалить сущность
         /// </summary>
         /// <param name="entity">Удаляемая сущность</param>
         /// <returns>Объект типа Task</returns>
-        Task<int> DeleteAsync(T entity);
+        Task<int> DeleteAsync(T entity, bool? saveChanges = true);
 
     }
 }

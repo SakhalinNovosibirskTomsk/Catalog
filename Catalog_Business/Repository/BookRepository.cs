@@ -1,4 +1,5 @@
 ﻿using Catalog_Business.Repository.IRepository;
+using Catalog_Common;
 using Catalog_DataAccess;
 using Catalog_DataAccess.CatalogDB;
 using System.Data.Entity;
@@ -8,8 +9,12 @@ namespace Catalog_Business.Repository
 {
     public class BookRepository : Repository<Book>, IBookRepository
     {
-        public BookRepository(ApplicationDbContext _db) : base(_db)
+
+        private readonly IBookToAuthorRepository _bookToAuthorRepository;
+
+        public BookRepository(ApplicationDbContext _db, IBookToAuthorRepository bookToAuthorRepository) : base(_db)
         {
+            _bookToAuthorRepository = bookToAuthorRepository;
         }
 
         public async Task<IEnumerable<Book>> GetAllBooksAsync(GetAllItems? getAllItems = GetAllItems.All)
@@ -71,6 +76,38 @@ namespace Catalog_Business.Repository
                 .FirstOrDefaultAsync(u => u.Name.Trim().ToUpper() == name.Trim().ToUpper());
 
             return gotBook;
+        }
+
+        public async Task<Book> AddBookAsync(Book book, List<Author> authorList)
+        {
+            var addedBook = await AddAsync(
+               new Book
+               {
+                   Name = book.Name,
+                   ISBN = book.ISBN,
+                   PublisherId = book.PublisherId,
+                   PublishDate = book.PublishDate,
+                   EBookLink = book.EBookLink,
+                   EBookDownloadCount = book.EBookDownloadCount,
+                   AddUserId = book.AddUserId,
+                   AddTime = book.AddTime,
+                   IsArchive = book.IsArchive,
+               }, false);
+
+            foreach (var author in authorList)
+            {
+                var addedBookToAuthor = await _bookToAuthorRepository.AddAsync(
+                new BookToAuthor
+                {
+                    BookId = addedBook.Id,
+                    AuthorId = author.Id,
+                    AddUserId = SD.UserIdForInitialData,
+                    AddTime = DateTime.Now,
+                }, false);
+            }
+            await _db.SaveChangesAsync();
+            addedBook = await GetBookByIdAsync(addedBook.Id);
+            return addedBook;
         }
     }
 }

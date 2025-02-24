@@ -163,7 +163,7 @@ namespace Catalog_WebAPI.Controllers
                 authorsFoundByNameList.Add(author);
             }
 
-            var addedBook = await _bookRepository.AddAsync(
+            var newBook =
                 new Book
                 {
                     Name = request.Name,
@@ -175,19 +175,9 @@ namespace Catalog_WebAPI.Controllers
                     AddUserId = SD.UserIdForInitialData,
                     AddTime = DateTime.Now,
                     IsArchive = false,
-                });
+                };
 
-            foreach (var author in authorsFoundByNameList)
-            {
-                var addedBookToAuthor = await _bookToAuthorRepository.AddAsync(
-                new BookToAuthor
-                {
-                    BookId = addedBook.Id,
-                    AuthorId = author.Id,
-                    AddUserId = SD.UserIdForInitialData,
-                    AddTime = DateTime.Now,
-                });
-            }
+            var addedBook = await _bookRepository.AddBookAsync(newBook, authorsFoundByNameList);
 
             var routVar = "";
             if (Request != null)
