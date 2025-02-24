@@ -249,7 +249,8 @@ namespace Catalog_WebAPI.Controllers
             if (foundPublisher.IsArchive != true)
                 return BadRequest("Издатель с Id = " + id.ToString() + " не находится в архиве. Невозможно восстановить его из архива");
             foundPublisher.IsArchive = false;
-            return Ok(await _publisherRepository.UpdateAsync(foundPublisher));
+            var updatedPublisher = await _publisherRepository.UpdateAsync(foundPublisher);
+            return Ok(_mapper.Map<Publisher, PublisherItemResponse>(updatedPublisher));
         }
     }
 }
