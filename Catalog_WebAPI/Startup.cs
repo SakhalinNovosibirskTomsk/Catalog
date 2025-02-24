@@ -8,7 +8,6 @@ using Catalog_WebAPI.Controllers.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Reflection;
-using static Catalog_Common.SD;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace Catalog_WebAPI
@@ -75,53 +74,15 @@ namespace Catalog_WebAPI
             services.AddScoped<IPublisherRepository, PublisherRepository>();
 
 
-            //services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            var dbConnectionMode = Configuration.GetValue<string>("DbConnectionMode");
-
-            DbConnectionMode dbConnectionModeEnum = (DbConnectionMode)Enum.Parse(typeof(DbConnectionMode), dbConnectionMode, true);
-            SD.dbConnectionMode = dbConnectionModeEnum;
-
-            switch (dbConnectionModeEnum)
+            services.AddDbContext<ApplicationDbContext>(options =>
             {
-                case DbConnectionMode.MSSQL:
-                    {
-                        services.AddDbContext<ApplicationDbContext>(options =>
-                        {
-                            options.UseSqlServer(Configuration.GetConnectionString("CatalogDBMSSQLConnection"),
-                            u => u.CommandTimeout(SD.SqlCommandConnectionTimeout));
-                            options.UseLazyLoadingProxies();
-                        });
+                options.UseNpgsql(Configuration.GetConnectionString("CatalogDBPostgresSQLConnection"),
+                u => u.CommandTimeout(SD.SqlCommandConnectionTimeout));
+                options.UseLazyLoadingProxies();
+            });
 
-                        break;
-                    }
-                case DbConnectionMode.PostgreSQL:
-                    {
-                        services.AddDbContext<ApplicationDbContext>(options =>
-                        {
-                            options.UseNpgsql(Configuration.GetConnectionString("CatalogDBPostgresSQLConnection"),
-                            u => u.CommandTimeout(SD.SqlCommandConnectionTimeout));
-                            options.UseLazyLoadingProxies();
-                        });
-                        break;
-                    }
-                case DbConnectionMode.SqlLight:
-                    {
-                        services.AddDbContext<ApplicationDbContext>(options =>
-                        {
-                            options.UseSqlite(Configuration.GetConnectionString("CatalogDBSqlLightConnection"),
-                            u => u.CommandTimeout(SD.SqlCommandConnectionTimeout));
-                            options.UseLazyLoadingProxies();
-                        });
-                        break;
-                    }
-                default:
-                    {
-                        break;
-                    }
-            }
 
             services.AddOpenApiDocument(options =>
             {
@@ -150,7 +111,6 @@ namespace Catalog_WebAPI
             {
                 x.DocExpansion(DocExpansion.List);
             });
-            //    x.SwaggerEndpoint("/openapi/v1.json", "Catalog API ver. 1");
 
             app.UseHttpsRedirection();
 

@@ -1,6 +1,4 @@
-﻿using Catalog_Common;
-using Catalog_DataAccess.CatalogDB;
-using Microsoft.EntityFrameworkCore;
+﻿using Catalog_DataAccess.CatalogDB;
 
 namespace Catalog_DataAccess.DbInitializer
 {
@@ -56,7 +54,7 @@ namespace Catalog_DataAccess.DbInitializer
             //}
 
             Console.WriteLine("Инициализация БД: Заполнение таблицы Authors ... ");
-            FillTable<Author>(InitialDataFactory.Authors, SD.dbConnectionMode);
+            FillTable<Author>(InitialDataFactory.Authors);
             Console.WriteLine("Инициализация БД: Заполнение таблицы Authors - Выполнено");
 
             //_db.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Authors ON");
@@ -69,11 +67,11 @@ namespace Catalog_DataAccess.DbInitializer
             Console.WriteLine("Инициализация БД: Заполнение таблицы Publishers ... ");
             //_db.AddRange(InitialDataFactory.Publishers);
             //_db.SaveChanges();
-            FillTable<Publisher>(InitialDataFactory.Publishers, SD.dbConnectionMode);
+            FillTable<Publisher>(InitialDataFactory.Publishers);
             Console.WriteLine("Инициализация БД: Заполнение таблицы Publishers - Выполнено");
 
             Console.WriteLine("Инициализация БД: Заполнение таблицы States ... ");
-            FillTable<State>(InitialDataFactory.States, SD.dbConnectionMode);
+            FillTable<State>(InitialDataFactory.States);
             //_db.AddRange(InitialDataFactory.States);
             //_db.SaveChanges();
             Console.WriteLine("Инициализация БД: Заполнение таблицы States - Выполнено");
@@ -81,39 +79,33 @@ namespace Catalog_DataAccess.DbInitializer
             Console.WriteLine("Инициализация БД: Заполнение таблицы Books ... ");
             //_db.AddRange(InitialDataFactory.Books);
             //_db.SaveChanges();
-            FillTable<Book>(InitialDataFactory.Books, SD.dbConnectionMode);
+            FillTable<Book>(InitialDataFactory.Books);
             Console.WriteLine("Инициализация БД: Заполнение таблицы Books - Выполнено");
 
             Console.WriteLine("Инициализация БД: Заполнение таблицы BookToAuthors ... ");
             //_db.AddRange(InitialDataFactory.BooksToAuthors);
             //_db.SaveChanges();
-            FillTable<BookToAuthor>(InitialDataFactory.BookToAuthors, SD.dbConnectionMode);
+            FillTable<BookToAuthor>(InitialDataFactory.BookToAuthors);
             Console.WriteLine("Инициализация БД: Заполнение таблицы BookToAuthors - Выполнено");
 
             Console.WriteLine("Инициализация БД: Заполнение таблицы BookInstances ... ");
             //_db.AddRange(InitialDataFactory.BookInstances);
             //_db.SaveChanges();
-            FillTable<BookInstance>(InitialDataFactory.BookInstances, SD.dbConnectionMode);
+            FillTable<BookInstance>(InitialDataFactory.BookInstances);
             Console.WriteLine("Инициализация БД: Заполнение таблицы BookInstances - Выполнено");
         }
 
 
-        public void FillTable<T>(List<T> tableList, SD.DbConnectionMode dbConnectionMode)
+        public void FillTable<T>(List<T> tableList)
         {
             Console.WriteLine("Инициализация БД: Заполнение таблицы Authors ... ");
             using (var transaction = _db.Database.BeginTransaction())
             {
                 try
                 {
-                    if (SD.dbConnectionMode == SD.DbConnectionMode.MSSQL)
-                    {
-                        _db.Database.ExecuteSqlRaw("SET IDENTITY_INSERT " + typeof(T).Name + "s ON;");
-                        _db.SaveChanges();
-                    }
                     foreach (var item in tableList)
                     {
                         _db.Add(item);
-                        //_db.ad.Authors.AddRange(tableList);
                     }
                     _db.SaveChanges();
                     transaction.Commit();
@@ -124,15 +116,6 @@ namespace Catalog_DataAccess.DbInitializer
                     transaction.Rollback();
                     throw;
                 }
-                finally
-                {
-                    if (SD.dbConnectionMode == SD.DbConnectionMode.MSSQL)
-                    {
-                        _db.Database.ExecuteSqlRaw($"SET IDENTITY_INSERT " + typeof(T).Name + "s OFF;");
-                        _db.SaveChanges();
-                    }
-                }
-
             }
 
         }
