@@ -308,5 +308,107 @@ namespace Catalog_WebAPI.Controllers
             var updatedBook = await _bookRepository.UpdateAsync(foundBook);
             return Ok(_mapper.Map<Book, BookItemResponse>(updatedBook));
         }
+
+
+
+        /// <summary>
+        /// Загрузить файл электронной копии книги
+        /// </summary>
+        /// <param name="id">ИД книги</param>
+        /// <param name="file">Файл эленктронной копии книги</param>
+        /// <returns>Возвращает изменённый объект BookItemResponse</returns>
+        [DisableRequestSizeLimit]
+        [HttpPut("UploadFile/{id:int}")]
+        [ProducesResponseType(typeof(BookItemResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<BookItemResponse>> UploadFileAsync(int id, IFormFile file)
+        {
+
+            if (file != null && file.Length > 0)
+            {
+
+                var foundBook = await _bookRepository.GetBookByIdAsync(id);
+
+                if (foundBook == null)
+                    return NotFound("Книга с Id = " + id.ToString() + " не найдена.");
+
+                if (!String.IsNullOrWhiteSpace(foundBook.EBookLink))
+                {
+                    if (System.IO.File.Exists(foundBook.EBookLink))
+                    {
+                        System.IO.File.Delete(foundBook.EBookLink);
+                    }
+                }
+
+                var extension = Path.GetExtension(file.FileName);
+                var fullPath = Path.Combine(SD.BookECopyPath, Guid.NewGuid().ToString() + extension);
+                using (FileStream fileStream = new FileStream(fullPath, FileMode.Create, FileAccess.ReadWrite))
+                {
+                    file.CopyTo(fileStream);
+                    if (fileStream != null)
+                        await fileStream.DisposeAsync();
+                }
+
+                if (System.IO.File.Exists(fullPath))
+                {
+                    foundBook.EBookLink = fullPath;
+                    var updatedBook = await _bookRepository.UpdateAsync(foundBook);
+
+                    return Ok(_mapper.Map<Book, BookItemResponse>(updatedBook));
+                }
+                else
+                {
+                    return BadRequest("Не удалось найти файл по пути \": " + fullPath + "\". Объект книги не изменён.");
+                }
+            }
+            else
+            {
+                return BadRequest("Файл не выбран или пустой!");
+            }
+        }
+
+
+        /// <summary>
+        /// Удалить файл электронной копии книги
+        /// </summary>
+        /// <param name="id">ИД книги</param>        
+        /// <returns>Возвращает изменённый объект BookItemResponse</returns>
+        [DisableRequestSizeLimit]
+        [HttpPut("DeleteFile/{id:int}")]
+        [ProducesResponseType(typeof(BookItemResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<BookItemResponse>> DeleteFileAsync(int id)
+        {
+
+
+
+            var foundBook = await _bookRepository.GetBookByIdAsync(id);
+
+            if (foundBook == null)
+                return NotFound("Книга с Id = " + id.ToString() + " не найдена.");
+
+            if (!String.IsNullOrWhiteSpace(foundBook.EBookLink))
+            {
+                if (System.IO.File.Exists(foundBook.EBookLink))
+                {
+                    System.IO.File.Delete(foundBook.EBookLink);
+                    foundBook.EBookLink = "";
+                    var updatedBook = await _bookRepository.UpdateAsync(foundBook);
+
+                    return Ok(_mapper.Map<Book, BookItemResponse>(updatedBook));
+                }
+                else
+                {
+                    return NotFound("Файл не найден: \"" + foundBook.EBookLink + "\"");
+                }
+            }
+            else
+            {
+                return BadRequest("У книги нет ссылки на файл электронной копии");
+            }
+        }
     }
+
 }

@@ -26,6 +26,10 @@ namespace Catalog_WebAPI
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+
+            SD.SqlCommandConnectionTimeout = int.Parse(Configuration.GetValue<string>("SqlCommandConnectionTimeout"));
+            SD.BookECopyPath = Configuration.GetValue<string>("BookECopyPath");
+
             services.AddControllers().AddMvcOptions(x =>
                 x.SuppressAsyncSuffixInActionNames = false);
 
