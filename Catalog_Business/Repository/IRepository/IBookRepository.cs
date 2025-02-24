@@ -17,5 +17,7 @@ namespace Catalog_Business.Repository.IRepository
         public Task<Book> GetBookByNameAsync(string name);
 
         public Task<Book> AddBookAsync(Book book, List<Author> authorList);
+
+        public Task<Book> UpdateBookAsync(Book book, List<Author> authorList);
     }
 }

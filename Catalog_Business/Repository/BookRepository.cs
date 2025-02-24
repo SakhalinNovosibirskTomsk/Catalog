@@ -109,5 +109,57 @@ namespace Catalog_Business.Repository
             addedBook = await GetBookByIdAsync(addedBook.Id);
             return addedBook;
         }
+
+        public async Task<Book> UpdateBookAsync(Book book, List<Author> authorList)
+        {
+            var foundBookToAuthorsList = await _bookToAuthorRepository.FindBookToAuthorsByBookId(book.Id);
+
+            List<int> authorsIdInDb = foundBookToAuthorsList.Select(u => u.AuthorId).ToList();
+            List<int> authorsIdNew = authorList.Select(u => u.Id).ToList();
+
+            List<int> authorsForDelete = authorsIdInDb.Except(authorsIdNew).ToList();
+            List<int> authorsForAdding = authorsIdNew.Except(authorsIdInDb).ToList();
+
+            foreach (var authorId in authorsForDelete)
+            {
+                var foundBookToAuthor = await _bookToAuthorRepository.FindBookToAuthorByBookIdAndAuthorId(book.Id, authorId);
+
+                if (foundBookToAuthor != null)
+                    await _bookToAuthorRepository.DeleteAsync(foundBookToAuthor, false);
+            }
+
+            foreach (var authorId in authorsForAdding)
+            {
+                var foundBookToAuthor = await _bookToAuthorRepository.FindBookToAuthorByBookIdAndAuthorId(book.Id, authorId);
+
+                if (foundBookToAuthor == null)
+                    await _bookToAuthorRepository.AddAsync(
+                        new BookToAuthor
+                        {
+                            BookId = book.Id,
+                            AuthorId = authorId,
+                            AddUserId = SD.UserIdForInitialData,
+                            AddTime = DateTime.Now,
+                        }, false);
+            }
+
+            var editedBook = await UpdateAsync(
+               new Book
+               {
+                   Name = book.Name,
+                   ISBN = book.ISBN,
+                   PublisherId = book.PublisherId,
+                   PublishDate = book.PublishDate,
+                   EBookLink = book.EBookLink,
+                   EBookDownloadCount = book.EBookDownloadCount,
+                   AddUserId = book.AddUserId,
+                   AddTime = book.AddTime,
+                   IsArchive = book.IsArchive,
+               }, false);
+
+            await _db.SaveChangesAsync();
+            editedBook = await GetBookByIdAsync(editedBook.Id);
+            return editedBook;
+        }
     }
 }

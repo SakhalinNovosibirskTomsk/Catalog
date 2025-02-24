@@ -189,86 +189,124 @@ namespace Catalog_WebAPI.Controllers
         }
 
         /// <summary>
-        /// Изменение существующего издателя
+        /// Изменение существующей книги
         /// </summary>
-        /// <param name="id">ИД изменяемого издателя</param>
-        /// <param name="request">Новые данные изменяемого издателя - объект типа PublisherItemCreateUpdateRequest</param>
-        /// <returns>Возвращает данные изменённого издателдя - объект PublisherItemResponse</returns>
-        /// <response code="200">Успешное выполнение. Издатель изменён</response>
-        /// <response code="400">Не удалось изменить издателя. Причина описана в ответе</response>  
-        /// <response code="404">Не удалось найти издателя с указаным ИД</response>  
+        /// <param name="id">ИД изменяемоой книги</param>
+        /// <param name="request">Новые данные изменяемой книги - объект типа BookItemCreateUpdateRequest</param>
+        /// <returns>Возвращает данные изменённой книги - объект BookItemResponse</returns>
+        /// <response code="200">Успешное выполнение. Данные книги изменёны</response>
+        /// <response code="400">Не удалось изменить данные книги. Причина описана в ответе</response>  
+        /// <response code="404">Не удалось найти книгу с указаным ИД</response>  
         [HttpPut("{id:int}")]
-        [ProducesResponseType(typeof(PublisherItemResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BookItemResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<PublisherItemResponse>> EditPublisherAsync(int id, PublisherItemCreateUpdateRequest request)
+        public async Task<ActionResult<BookItemResponse>> EditBookAsync(int id, BookItemCreateUpdateRequest request)
         {
-            var foundPublisher = await _publisherRepository.GetByIdAsync(id);
-            if (foundPublisher == null)
-                return NotFound("Издатель с Id = " + id.ToString() + " не найден.");
+            var foundBook = await _bookRepository.GetByIdAsync(id);
+            if (foundBook == null)
+                return NotFound("Книга с Id = " + id.ToString() + " не найдена.");
 
-            var foundPublisherByName = await _publisherRepository.GetPublisherByNameAsync(request.Name);
+            var foundBookByName = await _bookRepository.GetBookByNameAsync(request.Name);
 
-            if (foundPublisherByName != null)
-                if (foundPublisherByName.Id != foundPublisher.Id)
-                    return BadRequest("Уже есть издатель с наименованием = " + request.Name + " (ИД = " + foundPublisherByName.Id.ToString() + ")");
+            if (foundBookByName != null)
+                if (foundBookByName.Id != foundBook.Id)
+                    return BadRequest("Уже есть книга с наименованием = " + request.Name + " (ИД = " + foundBookByName.Id.ToString() + ")");
 
-            if (foundPublisher.Name.Trim().ToUpper() != request.Name.Trim().ToUpper())
-                foundPublisher.Name = request.Name;
+            if (String.IsNullOrWhiteSpace(request.PublisherName))
+                return BadRequest("Не указано наименование издателя в данных изменяемой книги");
 
-            var updatedPublisher = await _publisherRepository.UpdateAsync(foundPublisher);
-            return Ok(_mapper.Map<Publisher, PublisherItemResponse>(updatedPublisher));
+            if (request.BookAuthors == null || request.BookAuthors.Count() <= 0)
+                return BadRequest("Не указан ни один автор в данных изменяемой книги");
+
+            var foundPublisherByName = await _publisherRepository.GetPublisherByNameAsync(request.PublisherName);
+
+            if (foundPublisherByName == null)
+                return BadRequest("Издатель с наименованием \"" + request.PublisherName + "\" не найден в справочнике издателей.");
+
+            List<Author> authorsFoundByNameList = new List<Author>();
+            foreach (var bookAuthor in request.BookAuthors)
+            {
+                var author = await _authorRepository.GetAuthorByFullNameAsync(firstName: bookAuthor.FirstName, lastName: bookAuthor.LastName, middleName: bookAuthor.MiddleName);
+
+                if (author == null)
+                {
+                    return BadRequest("Автор \""
+                        + (String.IsNullOrWhiteSpace(bookAuthor.FirstName) ? "" : bookAuthor.FirstName)
+                        + (String.IsNullOrWhiteSpace(bookAuthor.LastName) ? "" : bookAuthor.LastName)
+                        + (String.IsNullOrWhiteSpace(bookAuthor.MiddleName) ? "" : bookAuthor.MiddleName)
+                        + "\" не найден в справочнике авторов.");
+                }
+
+                authorsFoundByNameList.Add(author);
+            }
+
+
+            if (foundBook.Name.Trim().ToUpper() != request.Name.Trim().ToUpper())
+                foundBook.Name = request.Name;
+
+            if (foundBook.ISBN.Trim().ToUpper() != request.ISBN.Trim().ToUpper())
+                foundBook.ISBN = request.ISBN;
+
+            if (foundBook.PublisherId != foundPublisherByName.Id)
+                foundBook.PublisherId = foundPublisherByName.Id;
+
+            if (foundBook.PublishDate != request.PublishDate)
+                foundBook.PublishDate = request.PublishDate;
+
+            var updatedBook = await _bookRepository.UpdateBookAsync(foundBook, authorsFoundByNameList);
+            return Ok(_mapper.Map<Book, BookItemResponse>(updatedBook));
         }
 
 
 
         /// <summary>
-        /// Удалить издателя с указаным ИД в архив
+        /// Удалить книгу с указаным ИД в архив
         /// </summary>
-        /// <param name="id">ИД удаляемого в архив издателя</param>
-        /// <returns>Возвращает данные удалённого в архив издателя - объект PublisherItemResponse</returns>
-        /// <response code="200">Успешное выполнение. Издатель удалён в архив</response>
-        /// <response code="400">Не удалось удалить издателя в архив, так как издатель уже в архиве</response>  
-        /// <response code="404">Не удалось найти издателя с указаным ИД</response>  
+        /// <param name="id">ИД удалякмой в архив книги</param>
+        /// <returns>Возвращает данные удалённой в архив книги - объект BookItemResponse</returns>
+        /// <response code="200">Успешное выполнение. Книга удалёна в архив</response>
+        /// <response code="400">Не удалось удалить книгу в архив, так как книга уже в архиве</response>  
+        /// <response code="404">Не удалось найти книгу с указаным ИД</response>  
         [HttpPut("DeleteToArchive/{id:int}")]
-        [ProducesResponseType(typeof(PublisherItemResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BookItemResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<PublisherItemResponse>> DeletePublisherToArchiveAsync(int id)
+        public async Task<ActionResult<BookItemResponse>> DeleteBookToArchiveAsync(int id)
         {
-            var foundPublisher = await _publisherRepository.GetByIdAsync(id);
-            if (foundPublisher == null)
-                return NotFound("Издатель с Id = " + id.ToString() + " не найден.");
-            if (foundPublisher.IsArchive == true)
-                return BadRequest("Издатель с Id = " + id.ToString() + " уже в архиве.");
-            foundPublisher.IsArchive = true;
-            var updatedPublisher = await _publisherRepository.UpdateAsync(foundPublisher);
-            return Ok(_mapper.Map<Publisher, PublisherItemResponse>(updatedPublisher));
+            var foundBook = await _bookRepository.GetBookByIdAsync(id);
+            if (foundBook == null)
+                return NotFound("Книга с Id = " + id.ToString() + " не найдена.");
+            if (foundBook.IsArchive == true)
+                return BadRequest("Книга с Id = " + id.ToString() + " уже в архиве.");
+            foundBook.IsArchive = true;
+            var updatedBook = await _bookRepository.UpdateAsync(foundBook);
+            return Ok(_mapper.Map<Book, BookItemResponse>(updatedBook));
         }
 
 
         /// <summary>
-        /// Восстановить издателя с указаным ИД из архива
+        /// Восстановить книгу с указаным ИД из архива
         /// </summary>
-        /// <param name="id">ИД восстанавливаемого из архива издателя</param>
-        /// <returns>Возвращает данные восстановленного из архива издателя - объект PublisherItemResponse</returns>
-        /// <response code="200">Успешное выполнение. Издатель восстановлен из архива</response>
-        /// <response code="400">Не удалось восстановить издателя из архива, так как издатель уже не в архиве</response>  
-        /// <response code="404">Не удалось найти издателя с указаным ИД</response>  
+        /// <param name="id">ИД восстанавливаемой из архива книги</param>
+        /// <returns>Возвращает данные восстановленной из архива книги - объект BookItemResponse</returns>
+        /// <response code="200">Успешное выполнение. Книга восстановлена из архива</response>
+        /// <response code="400">Не удалось восстановить книгу из архива, так как книга уже не в архиве</response>  
+        /// <response code="404">Не удалось найти книгу с указаным ИД</response>  
         [HttpPut("RestoreFromArchive/{id:int}")]
-        [ProducesResponseType(typeof(PublisherItemResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BookItemResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<PublisherItemResponse>> RestorePublisherFromArchiveAsync(int id)
+        public async Task<ActionResult<BookItemResponse>> RestoreBBookFromArchiveAsync(int id)
         {
-            var foundPublisher = await _publisherRepository.GetByIdAsync(id);
-            if (foundPublisher == null)
-                return NotFound("Издатель с Id = " + id.ToString() + " не найден.");
-            if (foundPublisher.IsArchive != true)
-                return BadRequest("Издатель с Id = " + id.ToString() + " не находится в архиве. Невозможно восстановить его из архива");
-            foundPublisher.IsArchive = false;
-            var updatedPublisher = await _publisherRepository.UpdateAsync(foundPublisher);
-            return Ok(_mapper.Map<Publisher, PublisherItemResponse>(updatedPublisher));
+            var foundBook = await _bookRepository.GetBookByIdAsync(id);
+            if (foundBook == null)
+                return NotFound("Книга с Id = " + id.ToString() + " не найдена.");
+            if (foundBook.IsArchive != true)
+                return BadRequest("Книга с Id = " + id.ToString() + " не находится в архиве. Невозможно восстановить её из архива");
+            foundBook.IsArchive = false;
+            var updatedBook = await _bookRepository.UpdateAsync(foundBook);
+            return Ok(_mapper.Map<Book, BookItemResponse>(updatedBook));
         }
     }
 }
