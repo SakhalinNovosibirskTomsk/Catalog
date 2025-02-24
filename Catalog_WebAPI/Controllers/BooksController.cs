@@ -317,6 +317,9 @@ namespace Catalog_WebAPI.Controllers
         /// <param name="id">ИД книги</param>
         /// <param name="file">Файл эленктронной копии книги</param>
         /// <returns>Возвращает изменённый объект BookItemResponse</returns>
+        /// <response code="200">Успешное выполнение.</response>
+        /// <response code="400">Проблема при загрузке файлаю Подробности в сроке ответа</response>  
+        /// <response code="404">Не удалось найти книгу с указаным ИД</response>  
         [DisableRequestSizeLimit]
         [HttpPut("UploadFile/{id:int}")]
         [ProducesResponseType(typeof(BookItemResponse), (int)HttpStatusCode.OK)]
@@ -374,15 +377,16 @@ namespace Catalog_WebAPI.Controllers
         /// </summary>
         /// <param name="id">ИД книги</param>        
         /// <returns>Возвращает изменённый объект BookItemResponse</returns>
+        /// <response code="200">Успешное выполнение.</response>
+        /// <response code="400">У книги нет ссылки на файл электронной копии</response>  
+        /// <response code="404">Книга с указанным или файл не найдены</response>  
         [DisableRequestSizeLimit]
-        [HttpPut("DeleteFile/{id:int}")]
+        [HttpDelete("DeleteFile/{id:int}")]
         [ProducesResponseType(typeof(BookItemResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<BookItemResponse>> DeleteFileAsync(int id)
         {
-
-
 
             var foundBook = await _bookRepository.GetBookByIdAsync(id);
 
@@ -398,6 +402,50 @@ namespace Catalog_WebAPI.Controllers
                     var updatedBook = await _bookRepository.UpdateAsync(foundBook);
 
                     return Ok(_mapper.Map<Book, BookItemResponse>(updatedBook));
+                }
+                else
+                {
+                    return NotFound("Файл не найден: \"" + foundBook.EBookLink + "\"");
+                }
+            }
+            else
+            {
+                return BadRequest("У книги нет ссылки на файл электронной копии");
+            }
+        }
+
+
+
+        /// <summary>
+        /// Скачать файл электронной копии книги
+        /// </summary>
+        /// <param name="id">ИД книги</param>
+        /// <returns>Возвращает файл эдектронной копии книги</returns>
+        /// <response code="200">Успешное выполнение.</response>
+        /// <response code="400">У книги нет ссылки на файл электронной копии</response>  
+        /// <response code="404">Книга с указанным или файл не найдены</response>  
+        [DisableRequestSizeLimit]
+        [HttpGet("DownloadFile/{id}")]
+        [ProducesResponseType(typeof(File), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> DownloadFileAsync(int id)
+        {
+
+            var foundBook = await _bookRepository.GetBookByIdAsync(id);
+
+            if (foundBook == null)
+                return NotFound("Книга с Id = " + id.ToString() + " не найдена.");
+
+            if (!String.IsNullOrWhiteSpace(foundBook.EBookLink))
+            {
+                if (System.IO.File.Exists(foundBook.EBookLink))
+                {
+
+                    var forFileName = "Book_id_" + id.ToString();
+                    return Ok(File(new FileStream(foundBook.EBookLink, FileMode.Open), "application/pdf", forFileName));
+                    //return Ok(File(new FileStream(foundBook.EBookLink, FileMode.Open), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", forFileName));
+
                 }
                 else
                 {
