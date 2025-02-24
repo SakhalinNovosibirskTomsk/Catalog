@@ -75,10 +75,14 @@ namespace Catalog_DataAccess.CatalogDB
         [MSEF.Comment("Дата/время добавления книги")]
         public DateTime AddTime { get; set; } = DateTime.Now;
 
+        public virtual ICollection<BookToAuthor> BookToAuthorList { get; set; }
+
         /// <summary>
         /// Признак удаления книги в архив
         /// </summary>
         [MSEF.Comment("Признак удаления книги в архив")]
         public bool IsArchive { get; set; } = false;
+
+
     }
 }

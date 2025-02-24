@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Catalog_DataAccess.CatalogDB;
 using Catalog_Models.CatalogModels.Author;
+using Catalog_Models.CatalogModels.Book;
 using Catalog_Models.CatalogModels.Publisher;
 using Catalog_Models.CatalogModels.State;
 
@@ -18,6 +19,9 @@ namespace Catalog_Business.Mapper
 
             CreateMap<Author, AuthorItemResponse>();
             CreateMap<Author, AuthorItemCreateUpdateRequest>();
+
+            CreateMap<Book, BookItemResponse>();
+            CreateMap<Book, BookItemCreateUpdateRequest>();
         }
     }
 }

@@ -1,6 +1,4 @@
-using Catalog_WebAPI;
-
-namespace PromoCodeFactory.WebHost
+namespace Catalog_WebAPI.WebHost
 {
     public class Program
     {
