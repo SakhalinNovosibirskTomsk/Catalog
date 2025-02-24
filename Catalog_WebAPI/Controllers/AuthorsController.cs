@@ -3,7 +3,9 @@ using Catalog_Business.Repository.IRepository;
 using Catalog_Common;
 using Catalog_DataAccess.CatalogDB;
 using Catalog_Models.CatalogModels.Author;
+using Catalog_WebAPI.Controllers.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 
 namespace Catalog_WebAPI.Controllers
@@ -124,10 +126,11 @@ namespace Catalog_WebAPI.Controllers
         /// <param name="lastname"> Фамилия автора </param>
         /// <param name="middlename"> Отчество автора </param>
         /// <returns>Возвращает найденого автора - объект типа AuthorItemResponse</returns>
-        [HttpGet("GetByName/{firstname:alpha}/{lastname:alpha}/{middlename:alpha}")]
+        [HttpGet("GetByName/{firstname}/{lastname}/{middlename?}")]
+        [SwaggerOperationFilter(typeof(ReApplyOptionalRouteParameterOperationFilter))]
         [ProducesResponseType(typeof(AuthorItemResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<AuthorItemResponse>> GetAuthorByFullNameAsync(string firstname, string lastname, string? middlename)
+        public async Task<ActionResult<AuthorItemResponse>> GetAuthorByFullNameAsync(string firstname, string lastname, string? middlename = null)
         {
             var author = await _authorRepository.GetAuthorByFullNameAsync(firstname, lastname, middlename);
 
@@ -166,7 +169,6 @@ namespace Catalog_WebAPI.Controllers
                     AddTime = DateTime.Now,
                     IsArchive = false,
                 });
-
             var routVar = "";
             if (Request != null)
             {
@@ -264,7 +266,8 @@ namespace Catalog_WebAPI.Controllers
             if (foundAuthor.IsArchive != true)
                 return BadRequest("Автор с Id = " + id.ToString() + " не находится в архиве. Невозможно восстановить его из архива");
             foundAuthor.IsArchive = false;
-            return Ok(await _authorRepository.UpdateAsync(foundAuthor));
+            var updatedAuthor = await _authorRepository.UpdateAsync(foundAuthor);
+            return Ok(_mapper.Map<Author, AuthorItemResponse>(foundAuthor));
         }
     }
 }

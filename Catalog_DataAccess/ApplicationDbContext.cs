@@ -47,6 +47,13 @@ namespace Catalog_DataAccess
         /// </summary>
         public DbSet<BookToAuthor> BookToAuthors { get; set; }
 
-    }
 
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Author>()
+                .Property(p => p.Id)
+                 .ValueGeneratedOnAdd();
+        }
+    }
 }

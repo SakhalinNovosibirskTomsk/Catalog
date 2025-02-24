@@ -38,6 +38,9 @@ namespace Catalog_Business.Repository
 
         public async Task<T> AddAsync(T entity)
         {
+            int id_var = 1;
+            id_var = _db.Set<T>().Max(u => u.Id) + 1;
+            entity.Id = id_var;
             var addedEntity = await _db.Set<T>().AddAsync(entity);
             await _db.SaveChangesAsync();
             return addedEntity.Entity;

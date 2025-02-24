@@ -4,6 +4,7 @@ using Catalog_Common;
 using Catalog_DataAccess;
 using Catalog_DataAccess.DbInitializer;
 using Catalog_WebAPI.Controllers;
+using Catalog_WebAPI.Controllers.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Reflection;
@@ -59,6 +60,9 @@ namespace Catalog_WebAPI
                 c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
                 modelsAssembly = typeof(Catalog_Models.CatalogModels.State.StateItemUpdateRequest).Assembly;
                 c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
+
+                c.OperationFilter<ReApplyOptionalRouteParameterOperationFilter>();
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Catalog sevice API (Library)", Version = "v1" });
 
             });
 

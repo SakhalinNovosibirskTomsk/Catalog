@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Catalog_DataAccess.CatalogDB
 {
@@ -14,7 +15,7 @@ namespace Catalog_DataAccess.CatalogDB
         /// </summary>
         [Key]
         [Required]
-        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Comment("ИД записи")]
         public int Id { get; set; }
     }

@@ -18,13 +18,23 @@ namespace Catalog_Business.Repository
         /// <param name="lastName">Фамилия автора</param>
         /// <param name="middleName">Отчество автора</param>
         /// <returns>Возвращает найденого автора - объект Author</returns>
-        public async Task<Author> GetAuthorByFullNameAsync(string firstName, string lastName, string? middleName)
+        public async Task<Author> GetAuthorByFullNameAsync(string firstName, string lastName, string? middleName = null)
         {
 
-            var author = await _db.Authors.FirstOrDefaultAsync(u => u.FirstName.Trim().ToUpper() == firstName.Trim().ToUpper()
-                        && u.LastName.Trim().ToUpper() == lastName.Trim().ToUpper()
-                        && u.MiddleName.Trim().ToUpper() == middleName.Trim().ToUpper());
-            return author;
+            if (String.IsNullOrWhiteSpace(middleName))
+            {
+                var author = await _db.Authors.FirstOrDefaultAsync(u => u.FirstName.Trim().ToUpper() == firstName.Trim().ToUpper()
+                        && u.LastName.Trim().ToUpper() == lastName.Trim().ToUpper());
+                return author;
+            }
+            else
+            {
+                var author = await _db.Authors.FirstOrDefaultAsync(u => u.FirstName.Trim().ToUpper() == firstName.Trim().ToUpper()
+                            && u.LastName.Trim().ToUpper() == lastName.Trim().ToUpper()
+                            && u.MiddleName.Trim().ToUpper() == middleName.Trim().ToUpper());
+                return author;
+            }
+
         }
     }
 }
