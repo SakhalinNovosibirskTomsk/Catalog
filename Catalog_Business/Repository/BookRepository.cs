@@ -112,7 +112,7 @@ namespace Catalog_Business.Repository
 
         public async Task<Book> UpdateBookAsync(Book book, List<Author> authorList)
         {
-            var foundBookToAuthorsList = await _bookToAuthorRepository.FindBookToAuthorsByBookId(book.Id);
+            var foundBookToAuthorsList = await _bookToAuthorRepository.FindBookToAuthorsByBookIdAsync(book.Id);
 
             List<int> authorsIdInDb = foundBookToAuthorsList.Select(u => u.AuthorId).ToList();
             List<int> authorsIdNew = authorList.Select(u => u.Id).ToList();
@@ -122,7 +122,7 @@ namespace Catalog_Business.Repository
 
             foreach (var authorId in authorsForDelete)
             {
-                var foundBookToAuthor = await _bookToAuthorRepository.FindBookToAuthorByBookIdAndAuthorId(book.Id, authorId);
+                var foundBookToAuthor = await _bookToAuthorRepository.FindBookToAuthorByBookIdAndAuthorIdAsync(book.Id, authorId);
 
                 if (foundBookToAuthor != null)
                     await _bookToAuthorRepository.DeleteAsync(foundBookToAuthor, false);
@@ -130,7 +130,7 @@ namespace Catalog_Business.Repository
 
             foreach (var authorId in authorsForAdding)
             {
-                var foundBookToAuthor = await _bookToAuthorRepository.FindBookToAuthorByBookIdAndAuthorId(book.Id, authorId);
+                var foundBookToAuthor = await _bookToAuthorRepository.FindBookToAuthorByBookIdAndAuthorIdAsync(book.Id, authorId);
 
                 if (foundBookToAuthor == null)
                     await _bookToAuthorRepository.AddAsync(

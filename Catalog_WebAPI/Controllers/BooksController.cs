@@ -127,7 +127,7 @@ namespace Catalog_WebAPI.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(PublisherItemResponse), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult<BookItemResponse>> CreatePublisherAsync(BookItemCreateUpdateRequest request)
+        public async Task<ActionResult<BookItemResponse>> CreateBookAsync(BookToAuthorResponse request)
         {
             var bookFoundByName = await _bookRepository.GetBookByNameAsync(request.Name);
             if (bookFoundByName != null)
@@ -201,7 +201,7 @@ namespace Catalog_WebAPI.Controllers
         [ProducesResponseType(typeof(BookItemResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookItemResponse>> EditBookAsync(int id, BookItemCreateUpdateRequest request)
+        public async Task<ActionResult<BookItemResponse>> EditBookAsync(int id, BookToAuthorResponse request)
         {
             var foundBook = await _bookRepository.GetByIdAsync(id);
             if (foundBook == null)
