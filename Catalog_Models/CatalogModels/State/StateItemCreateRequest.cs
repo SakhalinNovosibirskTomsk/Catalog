@@ -15,6 +15,6 @@ namespace Catalog_Models.CatalogModels.State
 
         public bool IsInitialState { get; set; } = false;
         public bool IsNeedComment { get; set; } = false;
-        public bool IsArchive { get; set; }
+        public bool IsArchive { get; set; } = false;
     }
 }
