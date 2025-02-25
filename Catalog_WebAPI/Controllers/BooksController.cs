@@ -315,19 +315,18 @@ namespace Catalog_WebAPI.Controllers
         /// Загрузить файл электронной копии книги
         /// </summary>
         /// <param name="id">ИД книги</param>
-        /// <param name="file">Файл эленктронной копии книги</param>
+        /// <param name="file">Файл эленктронной копии книги.</param>
         /// <returns>Возвращает изменённый объект BookItemResponse</returns>
         /// <response code="200">Успешное выполнение.</response>
         /// <response code="400">Проблема при загрузке файлаю Подробности в сроке ответа</response>  
         /// <response code="404">Не удалось найти книгу с указаным ИД</response>  
         [DisableRequestSizeLimit]
-        [HttpPut("UploadFile/{id:int}")]
+        [HttpPost("UploadFile/{id:int}")]
         [ProducesResponseType(typeof(BookItemResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookItemResponse>> UploadFileAsync(int id, IFormFile file)
+        public async Task<ActionResult<BookItemResponse>> UploadFileAsync(IFormFile file, int id)
         {
-
             if (file != null && file.Length > 0)
             {
 
@@ -340,15 +339,29 @@ namespace Catalog_WebAPI.Controllers
                 {
                     if (System.IO.File.Exists(foundBook.EBookLink))
                     {
-                        System.IO.File.Delete(foundBook.EBookLink);
+                        try
+                        {
+                            System.IO.File.Delete(foundBook.EBookLink);
+                        }
+                        catch (Exception ex)
+                        {
+                            return BadRequest("Ошибка при удалении предыдущего файла книги: " + ex.Message);
+                        }
                     }
                 }
 
                 var extension = Path.GetExtension(file.FileName);
-                var fullPath = Path.Combine(SD.BookECopyPath, Guid.NewGuid().ToString() + extension);
+                var fullPath = Path.Combine(SD.BookECopyPath, "EBookFile_" + foundBook.Id.ToString() + extension);
                 using (FileStream fileStream = new FileStream(fullPath, FileMode.Create, FileAccess.ReadWrite))
                 {
-                    file.CopyTo(fileStream);
+                    try
+                    {
+                        file.CopyTo(fileStream);
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest("Ошибка при копировании файла: " + ex.Message);
+                    }
                     if (fileStream != null)
                         await fileStream.DisposeAsync();
                 }
@@ -397,7 +410,14 @@ namespace Catalog_WebAPI.Controllers
             {
                 if (System.IO.File.Exists(foundBook.EBookLink))
                 {
-                    System.IO.File.Delete(foundBook.EBookLink);
+                    try
+                    {
+                        System.IO.File.Delete(foundBook.EBookLink);
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest("Ошибка удаления файла: " + ex.Message);
+                    }
                     foundBook.EBookLink = "";
                     var updatedBook = await _bookRepository.UpdateAsync(foundBook);
 
@@ -442,8 +462,19 @@ namespace Catalog_WebAPI.Controllers
                 if (System.IO.File.Exists(foundBook.EBookLink))
                 {
 
-                    var forFileName = "Book_id_" + id.ToString();
-                    return Ok(File(new FileStream(foundBook.EBookLink, FileMode.Open), "application/pdf", forFileName));
+                    var forFileName = "EBookFile_" + id.ToString();
+                    try
+                    {
+                        var stream = new FileStream(foundBook.EBookLink, FileMode.Open);
+                        var file = File(stream, "application/pdf", foundBook.EBookLink);
+                        return file;
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest("Ошибка при чтении файла или создании потока: " + ex.Message);
+                    }
+
+
                     //return Ok(File(new FileStream(foundBook.EBookLink, FileMode.Open), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", forFileName));
 
                 }

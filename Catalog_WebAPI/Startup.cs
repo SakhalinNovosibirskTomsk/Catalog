@@ -33,6 +33,13 @@ namespace Catalog_WebAPI
             services.AddControllers().AddMvcOptions(x =>
                 x.SuppressAsyncSuffixInActionNames = false);
 
+            //services.AddAuthentication(NegotiateDefaults.AuthenticationScheme).AddNegotiate();
+
+            //services.AddAuthorization(options =>
+            //{
+            //    options.FallbackPolicy = options.DefaultPolicy;
+            //});
+
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(c =>
             {
@@ -138,6 +145,9 @@ namespace Catalog_WebAPI
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            //app.UseAuthentication();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
