@@ -41,6 +41,7 @@ namespace Catalog_DataAccess.CatalogDB
         /// </summary>
         [ForeignKey("PublisherId")]
         public virtual Publisher? Publisher { get; set; }
+        //public Publisher? Publisher { get; set; }
 
         /// <summary>
         /// Дата издания

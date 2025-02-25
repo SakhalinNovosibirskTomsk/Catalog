@@ -23,32 +23,35 @@ namespace Catalog_Business.Repository
             {
                 case GetAllItems.All:
                     {
-                        var gotBooks = _db.Books.Include("Publisher")
-                            .Include("BookToAuthorList")
-                            .Include("BookToAuthorList.Author");
+                        var gotBooks = _db.Books
+                            .Include(p => p.Publisher)
+                            .Include(b => b.BookToAuthorList)
+                            .ToList();
+
                         return gotBooks;
                     }
                 case GetAllItems.ArchiveOnly:
                     {
                         var gotBooks = _db.Books.Where(u => u.IsArchive == true)
-                            .Include("Publisher")
-                            .Include("BookToAuthorList")
-                            .Include("BookToAuthorList.Author");
+                            .Include(p => p.Publisher)
+                            .Include(b => b.BookToAuthorList)
+                            .ToList();
                         return gotBooks;
                     }
                 case GetAllItems.NotArchiveOnly:
                     {
                         var gotBooks = _db.Books.Where(u => u.IsArchive != true)
-                            .Include("Publisher")
-                            .Include("BookToAuthorList")
-                            .Include("BookToAuthorList.Author");
+                            .Include(p => p.Publisher)
+                            .Include(b => b.BookToAuthorList)
+                            .ToList();
                         return gotBooks;
                     }
                 default:
                     {
-                        var gotBooks = _db.Books.Include("Publisher")
-                            .Include("BookToAuthorList")
-                            .Include("BookToAuthorList.Author");
+                        var gotBooks = _db.Books
+                            .Include(p => p.Publisher)
+                            .Include(b => b.BookToAuthorList)
+                            .ToList();
                         return gotBooks;
                     }
             }
@@ -56,12 +59,10 @@ namespace Catalog_Business.Repository
 
         public async Task<Book> GetBookByIdAsync(int id)
         {
-
-            var gotBook = await _db.Books
-                .Include("Publisher")
-                .Include("BookToAuthorList")
-                .Include("BookToAuthorList.Author")
-                .FirstOrDefaultAsync(u => u.Id == id);
+            var gotBook = _db.Books
+                .Include(p => p.Publisher)
+                .Include(b => b.BookToAuthorList)
+                .FirstOrDefault(u => u.Id == id);
 
             return gotBook;
         }
@@ -69,11 +70,10 @@ namespace Catalog_Business.Repository
 
         public async Task<Book> GetBookByNameAsync(string name)
         {
-            var gotBook = await _db.Books
-                .Include("Publisher")
-                .Include("BookToAuthorList")
-                .Include("BookToAuthorList.Author")
-                .FirstOrDefaultAsync(u => u.Name.Trim().ToUpper() == name.Trim().ToUpper());
+            var gotBook = _db.Books
+                .Include(p => p.Publisher)
+                .Include(b => b.BookToAuthorList)
+                .FirstOrDefault(u => u.Name.Trim().ToUpper() == name.Trim().ToUpper());
 
             return gotBook;
         }

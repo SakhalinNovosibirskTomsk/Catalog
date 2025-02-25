@@ -266,7 +266,9 @@ namespace Catalog_WebAPI.Controllers
             if (foundState.IsArchive != true)
                 return BadRequest("Статус с Id = " + id.ToString() + " не находится в архиве. Невозможно восстановить его из архива");
             foundState.IsArchive = false;
-            return Ok(await _stateRepository.UpdateAsync(foundState));
+            var updatedState = await _stateRepository.UpdateAsync(foundState);
+            return Ok(_mapper.Map<State, StateItemResponse>(updatedState));
+
         }
 
 

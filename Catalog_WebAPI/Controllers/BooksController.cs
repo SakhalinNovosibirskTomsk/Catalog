@@ -45,7 +45,9 @@ namespace Catalog_WebAPI.Controllers
         public async Task<ActionResult<List<BookItemResponse>>> GetAllBooksAsync()
         {
             var gotBooks = await _bookRepository.GetAllBooksAsync(SD.GetAllItems.All);
-            return Ok(_mapper.Map<IEnumerable<Book>, IEnumerable<BookItemResponse>>(gotBooks));
+            var aaa = gotBooks.ToList()[0].Publisher;
+            var bbb = _mapper.Map<IEnumerable<Book>, IEnumerable<BookItemResponse>>(gotBooks);
+            return Ok(bbb);
         }
 
         /// <summary>

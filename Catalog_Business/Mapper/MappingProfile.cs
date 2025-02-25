@@ -21,6 +21,7 @@ namespace Catalog_Business.Mapper
             CreateMap<Author, AuthorItemCreateUpdateRequest>();
 
             CreateMap<Book, BookItemResponse>();
+            //  .ForMember(dest => dest.Publisher, opt => opt.MapFrom(src => (src.Publisher == null) ? null : src.Publisher));
 
             CreateMap<BookToAuthor, AuthorItemResponse>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.AuthorId))

@@ -43,8 +43,8 @@ namespace Catalog_Business.Repository
         public async Task<IEnumerable<BookToAuthor>> FindBookToAuthorsByBookIdAsync(int bookId)
         {
             var retVar = _db.BookToAuthors
-                .Include("Book")
-                .Include("Author")
+                .Include(b => b.Book)
+                .Include(a => a.Author)
                 .OrderBy(u => u.AuthorId)
                 .Where(u => u.BookId == bookId);
             return retVar;

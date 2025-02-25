@@ -101,6 +101,14 @@ namespace Catalog_WebAPI
             if (env.IsDevelopment())
             {
                 app.UseSwagger();
+                //app.UseSwagger(c =>
+                //{
+                //    c.PreSerializeFilters.Add((swagger, httpReq) =>
+                //    {
+                //        swagger.Servers = new List<OpenApiServer> { new OpenApiServer { Url = $"https://{httpReq.Host.Host}" } };
+                //    });
+                //});
+
                 app.UseSwaggerUI();
                 app.UseDeveloperExceptionPage();
             }
