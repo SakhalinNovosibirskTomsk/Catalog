@@ -2,7 +2,9 @@
 using Catalog_Common;
 using Catalog_DataAccess;
 using Catalog_DataAccess.CatalogDB;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
+
+//using System.Data.Entity;
 using static Catalog_Common.SD;
 
 namespace Catalog_Business.Repository
@@ -92,7 +94,7 @@ namespace Catalog_Business.Repository
                    AddUserId = book.AddUserId,
                    AddTime = book.AddTime,
                    IsArchive = book.IsArchive,
-               }, false);
+               });
 
             foreach (var author in authorList)
             {
@@ -103,9 +105,9 @@ namespace Catalog_Business.Repository
                     AuthorId = author.Id,
                     AddUserId = SD.UserIdForInitialData,
                     AddTime = DateTime.Now,
-                }, false);
+                });
             }
-            await _db.SaveChangesAsync();
+            //await _db.SaveChangesAsync();
             addedBook = await GetBookByIdAsync(addedBook.Id);
             return addedBook;
         }
@@ -125,7 +127,7 @@ namespace Catalog_Business.Repository
                 var foundBookToAuthor = await _bookToAuthorRepository.FindBookToAuthorByBookIdAndAuthorIdAsync(book.Id, authorId);
 
                 if (foundBookToAuthor != null)
-                    await _bookToAuthorRepository.DeleteAsync(foundBookToAuthor, false);
+                    await _bookToAuthorRepository.DeleteAsync(foundBookToAuthor);
             }
 
             foreach (var authorId in authorsForAdding)
@@ -140,24 +142,12 @@ namespace Catalog_Business.Repository
                             AuthorId = authorId,
                             AddUserId = SD.UserIdForInitialData,
                             AddTime = DateTime.Now,
-                        }, false);
+                        });
             }
 
-            var editedBook = await UpdateAsync(
-               new Book
-               {
-                   Name = book.Name,
-                   ISBN = book.ISBN,
-                   PublisherId = book.PublisherId,
-                   PublishDate = book.PublishDate,
-                   EBookLink = book.EBookLink,
-                   EBookDownloadCount = book.EBookDownloadCount,
-                   AddUserId = book.AddUserId,
-                   AddTime = book.AddTime,
-                   IsArchive = book.IsArchive,
-               }, false);
 
-            await _db.SaveChangesAsync();
+            var editedBook = await UpdateAsync(book);
+            //await _db.SaveChangesAsync();
             editedBook = await GetBookByIdAsync(editedBook.Id);
             return editedBook;
         }

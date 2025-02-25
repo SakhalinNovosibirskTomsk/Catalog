@@ -1,5 +1,4 @@
-﻿using Catalog_Models.CatalogModels.Author;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Catalog_Models.CatalogModels.Book
@@ -7,7 +6,7 @@ namespace Catalog_Models.CatalogModels.Book
     /// <summary>
     /// Справочник книг
     /// </summary>
-    public class BookToAuthorResponse
+    public class BookItemCreateUpdateRequest
     {
         /// <summary>
         /// Наименование книги
@@ -41,7 +40,7 @@ namespace Catalog_Models.CatalogModels.Book
         /// <summary>
         /// Авторы книги
         /// </summary>
-        public List<AuthorItemResponse> BookAuthors { get; set; }
+        public List<AuthorForBookRequest> BookAuthors { get; set; }
 
 
     }

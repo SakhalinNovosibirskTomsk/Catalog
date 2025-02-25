@@ -1,7 +1,4 @@
-﻿using Catalog_Models.CatalogModels.Author;
-using Catalog_Models.CatalogModels.Book;
-
-namespace Catalog_Models.CatalogModels.BookToAuthor
+﻿namespace Catalog_Models.CatalogModels.BookToAuthor
 {
     /// <summary>
     /// Привязка авторов к книгам
@@ -17,12 +14,12 @@ namespace Catalog_Models.CatalogModels.BookToAuthor
         /// <summary>
         /// Книга
         /// </summary>        
-        public BookItemResponse Book { get; set; }
+        public BookShortResponse Book { get; set; }
 
         /// <summary>
         /// Автор
         /// </summary>
-        public AuthorItemResponse Author { get; set; }
+        public AuthorShortResponse Author { get; set; }
 
         /// <summary>
         /// ИД пользователя добавившего запись

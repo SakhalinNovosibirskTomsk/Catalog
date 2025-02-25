@@ -3,7 +3,6 @@ using Catalog_Business.Repository.IRepository;
 using Catalog_Common;
 using Catalog_DataAccess.CatalogDB;
 using Catalog_Models.CatalogModels.Book;
-using Catalog_Models.CatalogModels.Publisher;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -45,9 +44,8 @@ namespace Catalog_WebAPI.Controllers
         public async Task<ActionResult<List<BookItemResponse>>> GetAllBooksAsync()
         {
             var gotBooks = await _bookRepository.GetAllBooksAsync(SD.GetAllItems.All);
-            var aaa = gotBooks.ToList()[0].Publisher;
-            var bbb = _mapper.Map<IEnumerable<Book>, IEnumerable<BookItemResponse>>(gotBooks);
-            return Ok(bbb);
+            var retVar = _mapper.Map<IEnumerable<Book>, IEnumerable<BookItemResponse>>(gotBooks);
+            return Ok(retVar);
         }
 
         /// <summary>
@@ -70,7 +68,7 @@ namespace Catalog_WebAPI.Controllers
         /// <response code="200">Успешное выполнение</response>
         [HttpGet("AllNotInArchive")]
         [ProducesResponseType(typeof(List<BookItemResponse>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<List<BookItemResponse>>> GetAllPublishersNotInArchiveAsync()
+        public async Task<ActionResult<List<BookItemResponse>>> GetAllBooksNotInArchiveAsync()
         {
             var gotBooks = await _bookRepository.GetAllBooksAsync(SD.GetAllItems.NotArchiveOnly);
             return Ok(_mapper.Map<IEnumerable<Book>, IEnumerable<BookItemResponse>>(gotBooks));
@@ -127,9 +125,9 @@ namespace Catalog_WebAPI.Controllers
         /// <response code="201">Успешное выполнение. Издатель создан</response>
         /// <response code="400">Не удалось добавить книгу. Причина описана в ответе</response>  
         [HttpPost]
-        [ProducesResponseType(typeof(PublisherItemResponse), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(BookItemResponse), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult<BookItemResponse>> CreateBookAsync(BookToAuthorResponse request)
+        public async Task<ActionResult<BookItemResponse>> CreateBookAsync(BookItemCreateUpdateRequest request)
         {
             var bookFoundByName = await _bookRepository.GetBookByNameAsync(request.Name);
             if (bookFoundByName != null)
@@ -156,8 +154,8 @@ namespace Catalog_WebAPI.Controllers
                 if (author == null)
                 {
                     return BadRequest("Автор \""
-                        + (String.IsNullOrWhiteSpace(bookAuthor.FirstName) ? "" : bookAuthor.FirstName)
-                        + (String.IsNullOrWhiteSpace(bookAuthor.LastName) ? "" : bookAuthor.LastName)
+                        + (String.IsNullOrWhiteSpace(bookAuthor.FirstName) ? "" : bookAuthor.FirstName + " ")
+                        + (String.IsNullOrWhiteSpace(bookAuthor.LastName) ? "" : bookAuthor.LastName + " ")
                         + (String.IsNullOrWhiteSpace(bookAuthor.MiddleName) ? "" : bookAuthor.MiddleName)
                         + "\" не найден в справочнике авторов.");
                 }
@@ -203,7 +201,7 @@ namespace Catalog_WebAPI.Controllers
         [ProducesResponseType(typeof(BookItemResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookItemResponse>> EditBookAsync(int id, BookToAuthorResponse request)
+        public async Task<ActionResult<BookItemResponse>> EditBookAsync(int id, BookItemCreateUpdateRequest request)
         {
             var foundBook = await _bookRepository.GetByIdAsync(id);
             if (foundBook == null)

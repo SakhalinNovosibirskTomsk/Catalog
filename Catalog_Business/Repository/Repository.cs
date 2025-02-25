@@ -39,11 +39,12 @@ namespace Catalog_Business.Repository
         public async Task<T> AddAsync(T entity, bool? saveChanges = true)
         {
             int id_var = 1;
-            id_var = _db.Set<T>().Max(u => u.Id) + 1;
+            id_var = _db.Set<T>().AsNoTracking().Max(u => u.Id) + 1;
             entity.Id = id_var;
             var addedEntity = await _db.Set<T>().AddAsync(entity);
             if (saveChanges == true)
                 await _db.SaveChangesAsync();
+            //_db.Set<BookToAuthor>().AsNoTracking();
             return addedEntity.Entity;
         }
 

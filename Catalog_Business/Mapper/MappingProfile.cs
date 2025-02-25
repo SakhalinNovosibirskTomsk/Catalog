@@ -2,6 +2,7 @@
 using Catalog_DataAccess.CatalogDB;
 using Catalog_Models.CatalogModels.Author;
 using Catalog_Models.CatalogModels.Book;
+using Catalog_Models.CatalogModels.BookToAuthor;
 using Catalog_Models.CatalogModels.Publisher;
 using Catalog_Models.CatalogModels.State;
 
@@ -18,10 +19,12 @@ namespace Catalog_Business.Mapper
             CreateMap<Publisher, PublisherItemCreateUpdateRequest>();
 
             CreateMap<Author, AuthorItemResponse>();
-            CreateMap<Author, AuthorItemCreateUpdateRequest>();
+            CreateMap<Author, AuthorForBookRequest>();
+            CreateMap<Author, AuthorShortResponse>();
 
             CreateMap<Book, BookItemResponse>();
             //  .ForMember(dest => dest.Publisher, opt => opt.MapFrom(src => (src.Publisher == null) ? null : src.Publisher));
+            CreateMap<Book, BookShortResponse>();
 
             CreateMap<BookToAuthor, AuthorItemResponse>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.AuthorId))

@@ -2,7 +2,7 @@
 using Catalog_Business.Repository.IRepository;
 using Catalog_Common;
 using Catalog_DataAccess.CatalogDB;
-using Catalog_Models.CatalogModels.Book;
+using Catalog_Models.CatalogModels.BookToAuthor;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -179,6 +179,10 @@ namespace Catalog_WebAPI.Controllers
             if (foundBookToAuthor == null)
                 return NotFound("Запись с ИД = " + id.ToString() + " не найдена.");
 
+            var foundBookToAuthorList = await _bookToAuthorRepository.FindBookToAuthorsByBookIdAsync(foundBookToAuthor.BookId);
+            if (foundBookToAuthorList == null || foundBookToAuthorList.Count() <= 1)
+                return BadRequest("У книги один автор. Последнего автора удалять нельзя");
+
             return Ok(await _bookToAuthorRepository.DeleteAsync(foundBookToAuthor));
         }
 
@@ -189,15 +193,21 @@ namespace Catalog_WebAPI.Controllers
         /// <param name="authorId">ИД автора</param>
         /// <returns>Возвращает количество удалённых записей</returns>
         /// <response code="200">Успешное выполнение. Связка книги и автора удалёна</response>
+        /// <response code="400">У книги остался один автор. Последнего автора удалять нельзя</response>  
         /// <response code="404">Не удалось связку книги с авторос с указаным ИД</response>  
         [HttpPut("DeleteByBookIdAndAuthorId/{bookId}/{authorId}")]
         [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<int>> DeleteBookToAuthorByBookIdAndAuthorIdAsync(int bookId, int authorId)
         {
             var foundBookToAuthor = await _bookToAuthorRepository.FindBookToAuthorByBookIdAndAuthorIdAsync(bookId, authorId);
             if (foundBookToAuthor == null)
                 return NotFound("Запись с ИД книги = " + bookId.ToString() + " и ИД автора = " + authorId.ToString() + " не найдена.");
+
+            var foundBookToAuthorList = await _bookToAuthorRepository.FindBookToAuthorsByBookIdAsync(bookId);
+            if (foundBookToAuthorList == null || foundBookToAuthorList.Count() <= 1)
+                return BadRequest("У книги один автор. Последнего автора удалять нельзя");
 
             return Ok(await _bookToAuthorRepository.DeleteAsync(foundBookToAuthor));
         }

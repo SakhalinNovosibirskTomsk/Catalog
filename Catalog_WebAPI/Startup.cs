@@ -64,6 +64,17 @@ namespace Catalog_WebAPI
                 modelsAssembly = typeof(Catalog_Models.CatalogModels.State.StateItemUpdateRequest).Assembly;
                 c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
 
+                modelsAssembly = typeof(Catalog_Models.CatalogModels.Book.AuthorForBookRequest).Assembly;
+                c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
+                modelsAssembly = typeof(Catalog_Models.CatalogModels.Book.BookItemResponse).Assembly;
+                c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
+                modelsAssembly = typeof(Catalog_Models.CatalogModels.Book.BookItemCreateUpdateRequest).Assembly;
+                c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
+
+                modelsAssembly = typeof(Catalog_Models.CatalogModels.BookToAuthor.BookToAuthorResponse).Assembly;
+                c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
+
+
                 c.OperationFilter<ReApplyOptionalRouteParameterOperationFilter>();
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Catalog sevice API (Library)", Version = "v1" });
 
