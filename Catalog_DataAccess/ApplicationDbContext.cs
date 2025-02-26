@@ -49,6 +49,7 @@ namespace Catalog_DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // TODO разнести для каждой сужности в отдельный класс или метод настройку БД
 
             //------------------------------------------------------------------
             // Статусы
@@ -57,18 +58,18 @@ namespace Catalog_DataAccess
                 .ToTable("States")
                 .ToTable(t => t.HasComment("Справочник статусов состояния экземпляров книг"));
 
+
             modelBuilder.Entity<State>()
                 .HasKey(u => u.Id);
 
             modelBuilder.Entity<State>()
                 .HasIndex(nameof(State.Name))
                 .IsUnique()
-                .HasDatabaseName(nameof(State.Name));
+                .HasDatabaseName(nameof(State) + nameof(State.Name));
 
             modelBuilder.Entity<State>()
                 .Property(u => u.Id)
                 .HasComment("ИД записи")
-                .ValueGeneratedOnAddOrUpdate()
                 .IsRequired();
 
             modelBuilder.Entity<State>()
@@ -114,12 +115,11 @@ namespace Catalog_DataAccess
             modelBuilder.Entity<Publisher>()
                 .HasIndex(nameof(Publisher.Name))
                 .IsUnique()
-                .HasDatabaseName(nameof(Publisher.Name));
+                .HasDatabaseName(nameof(Publisher) + nameof(Publisher.Name));
 
             modelBuilder.Entity<Publisher>()
                 .Property(u => u.Id)
                 .HasComment("ИД записи")
-                .ValueGeneratedOnAddOrUpdate()
                 .IsRequired();
 
             modelBuilder.Entity<Publisher>()
@@ -159,12 +159,11 @@ namespace Catalog_DataAccess
             modelBuilder.Entity<Author>()
                 .HasIndex(nameof(Author.FirstName), nameof(Author.LastName), nameof(Author.MiddleName))
                 .IsUnique()
-                .HasDatabaseName("FullName");
+                .HasDatabaseName(nameof(Author) + "FullName");
 
             modelBuilder.Entity<Author>()
                 .Property(u => u.Id)
                 .HasComment("ИД записи")
-                .ValueGeneratedOnAddOrUpdate()
                 .IsRequired();
 
             modelBuilder.Entity<Author>()
@@ -215,6 +214,16 @@ namespace Catalog_DataAccess
                 .ToTable(t => t.HasComment("Связь книг с авторами"));
 
             modelBuilder.Entity<BookToAuthor>()
+                .HasOne(b => b.Book)
+                .WithMany(b => b.BookToAuthorList)
+                .HasForeignKey(k => k.BookId);
+
+            modelBuilder.Entity<BookToAuthor>()
+                .HasOne(b => b.Author)
+                .WithMany(b => b.BookToAuthorList)
+                .HasForeignKey(k => k.AuthorId);
+
+            modelBuilder.Entity<BookToAuthor>()
                 .HasKey(u => u.Id);
 
             modelBuilder.Entity<BookToAuthor>()
@@ -225,7 +234,6 @@ namespace Catalog_DataAccess
             modelBuilder.Entity<BookToAuthor>()
                 .Property(u => u.Id)
                 .HasComment("ИД записи")
-                .ValueGeneratedOnAddOrUpdate()
                 .IsRequired();
 
             modelBuilder.Entity<BookToAuthor>()
@@ -255,7 +263,11 @@ namespace Catalog_DataAccess
             //------------------------------------------------------------------
             modelBuilder.Entity<Book>()
                 .ToTable("Books")
-                .ToTable(t => t.HasComment("Справочник книг"));
+                .ToTable(t => t.HasComment("Справочник книг"))
+                .HasOne(p => p.Publisher)
+                .WithMany(b => b.BookList)
+                .HasForeignKey(k => k.PublisherId);
+
 
             modelBuilder.Entity<Book>()
                 .HasKey(u => u.Id);
@@ -263,12 +275,11 @@ namespace Catalog_DataAccess
             modelBuilder.Entity<Book>()
                 .HasIndex(nameof(Book.Name))
                 .IsUnique()
-                .HasDatabaseName(nameof(Book.Name));
+                .HasDatabaseName(nameof(Book) + nameof(Book.Name));
 
             modelBuilder.Entity<Book>()
                 .Property(u => u.Id)
                 .HasComment("ИД записи")
-                .ValueGeneratedOnAddOrUpdate()
                 .IsRequired();
 
             modelBuilder.Entity<Book>()
@@ -320,7 +331,15 @@ namespace Catalog_DataAccess
             //------------------------------------------------------------------
             modelBuilder.Entity<BookInstance>()
                 .ToTable("BookInstances")
-                .ToTable(t => t.HasComment("Экземпляры книг"));
+                .ToTable(t => t.HasComment("Экземпляры книг"))
+                .HasOne(s => s.State)
+                .WithMany(b => b.BookInstanceList)
+                .HasForeignKey(k => k.StateId);
+
+            modelBuilder.Entity<BookInstance>()
+                .HasOne(s => s.Book)
+                .WithMany(b => b.BookInstanceList)
+                .HasForeignKey(k => k.BookId);
 
             modelBuilder.Entity<BookInstance>()
                 .HasKey(u => u.Id);
@@ -328,7 +347,6 @@ namespace Catalog_DataAccess
             modelBuilder.Entity<BookInstance>()
                 .Property(u => u.Id)
                 .HasComment("ИД записи")
-                .ValueGeneratedOnAddOrUpdate()
                 .IsRequired();
 
             modelBuilder.Entity<BookInstance>()

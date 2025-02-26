@@ -170,7 +170,7 @@ namespace Catalog_WebAPI.Controllers
         /// <returns>Возвращает количество удалённых записей</returns>
         /// <response code="200">Успешное выполнение. Связка книги и автора удалёна</response>        
         /// <response code="404">Не удалось связку книги с авторос с указаным ИД</response>  
-        [HttpPut("DeleteById/{id:int}")]
+        [HttpDelete("DeleteById/{id:int}")]
         [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<int>> DeleteBookToAuthorByIdAsync(int id)
