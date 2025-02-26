@@ -94,6 +94,16 @@ namespace Catalog_WebAPI
                 c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
                 modelsAssembly = typeof(Catalog_Models.CatalogModels.BookInstance.BookInstanceResponse).Assembly;
                 c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
+                modelsAssembly = typeof(Catalog_Models.CatalogModels.BookInstance.BookInstanceUpdateStateRequest).Assembly;
+                c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
+                modelsAssembly = typeof(Catalog_Models.CatalogModels.BookInstance.BookInstanceUpdateWriteOffRequest).Assembly;
+                c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
+                modelsAssembly = typeof(Catalog_Models.CatalogModels.BookInstance.BookInstanceIsCheckedOutResponse).Assembly;
+                c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
+                modelsAssembly = typeof(Catalog_Models.CatalogModels.BookInstance.BookInstanceStateResponse).Assembly;
+                c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
+                modelsAssembly = typeof(Catalog_Models.CatalogModels.BookInstance.BookInstanceWriteOffResponse).Assembly;
+                c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
 
 
                 c.OperationFilter<ReApplyOptionalRouteParameterOperationFilter>();

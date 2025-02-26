@@ -15,5 +15,7 @@ namespace Catalog_Business.Repository.IRepository
 
         public Task<BookInstance> GetBookInstanceByIdAsync(int id);
 
+        public Task<BookInstance> GetBookInstanceByInventoryNumberAsync(string inventoryNumber);
+
     }
 }

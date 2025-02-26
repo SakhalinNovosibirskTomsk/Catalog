@@ -62,14 +62,14 @@ namespace Catalog_DataAccess.CatalogDB
         /// ИД причины списания экземпляра книги из библиотеки
         /// </summary>
         [Comment("ИД причины списания экземпляра книги из библиотеки")]
-        public int? WriteOffReasonId { get; set; }
+        public int? WriteOffReasonId { get; set; } = null;
 
 
         /// <summary>
         /// ИД пользователя списавшего экземпляр книги
         /// </summary>
         [Comment("ИД пользователя списавшего экземпляр книги")]
-        public Guid? WriteOffUserId { get; set; }
+        public Guid? WriteOffUserId { get; set; } = null;
 
         /// <summary>
         /// ИД статуса состояния книги
@@ -88,7 +88,7 @@ namespace Catalog_DataAccess.CatalogDB
         /// ИД комментария к статусу состояния книги
         /// </summary>
         [Comment("ИД комментария к статусу состояния книги")]
-        public int? FactCommentId { get; set; }
+        public int? FactCommentId { get; set; } = null;
 
         /// <summary>
         /// Текст комментария к статусу состояния книги

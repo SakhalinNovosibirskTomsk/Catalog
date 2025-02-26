@@ -90,5 +90,16 @@ namespace Catalog_Business.Repository
 
             return gotBookInstance;
         }
+
+        public async Task<BookInstance> GetBookInstanceByInventoryNumberAsync(string inventoryNumber)
+        {
+            var gotBookInstance = _db.BookInstances
+                .Include(b => b.Book)
+                .Include(s => s.State)
+                .FirstOrDefault(u => u.InventoryNumber.Trim().ToUpper() == inventoryNumber.Trim().ToUpper());
+
+            return gotBookInstance;
+        }
+
     }
 }

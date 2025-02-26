@@ -42,6 +42,11 @@ namespace Catalog_Business.Mapper
 
             CreateMap<BookInstance, BookInstanceCreateUpdateRequest>().ReverseMap();
             CreateMap<BookInstance, BookInstanceResponse>();
+            CreateMap<BookInstance, BookInstanceUpdateStateRequest>();
+            CreateMap<BookInstance, BookInstanceUpdateWriteOffRequest>();
+            CreateMap<BookInstance, BookInstanceIsCheckedOutResponse>();
+            CreateMap<BookInstance, BookInstanceStateResponse>();
+            CreateMap<BookInstance, BookInstanceWriteOffResponse>();
 
 
         }
