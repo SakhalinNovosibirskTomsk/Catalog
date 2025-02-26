@@ -467,6 +467,11 @@ namespace Catalog_WebAPI.Controllers
                     {
                         var stream = new FileStream(foundBook.EBookLink, FileMode.Open);
                         var file = File(stream, "application/pdf", foundBook.EBookLink);
+
+                        foundBook.EBookDownloadCount++;
+
+                        await _bookRepository.UpdateAsync(foundBook);
+
                         return file;
                     }
                     catch (Exception ex)

@@ -46,7 +46,7 @@ namespace Catalog_DataAccess.CatalogDB
         /// Признак удаления записи в архив
         /// </summary>
         [MSEF.Comment("Признак удаления записи в архив")]
-        public bool IsArchive { get; set; }
+        public bool IsArchive { get; set; } = false;
 
     }
 }
