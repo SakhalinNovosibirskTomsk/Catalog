@@ -2,6 +2,7 @@
 using Catalog_DataAccess.CatalogDB;
 using Catalog_Models.CatalogModels.Author;
 using Catalog_Models.CatalogModels.Book;
+using Catalog_Models.CatalogModels.BookInstance;
 using Catalog_Models.CatalogModels.BookToAuthor;
 using Catalog_Models.CatalogModels.Publisher;
 using Catalog_Models.CatalogModels.State;
@@ -38,6 +39,9 @@ namespace Catalog_Business.Mapper
                 .ForMember(dest => dest.IsArchive, opt => opt.MapFrom(src => src.Author.IsArchive));
 
             CreateMap<BookToAuthor, BookToAuthorResponse>();
+
+            CreateMap<BookInstance, BookInstanceCreateUpdateRequest>().ReverseMap();
+            CreateMap<BookInstance, BookInstanceResponse>();
 
 
         }

@@ -53,6 +53,15 @@ namespace Catalog_WebAPI
                 apiAssembly = typeof(StatesController).Assembly;
                 c.IncludeXmlComments(GetXmlDocumentationFileFor(apiAssembly));
 
+                apiAssembly = typeof(BooksController).Assembly;
+                c.IncludeXmlComments(GetXmlDocumentationFileFor(apiAssembly));
+
+                apiAssembly = typeof(BookInstancesController).Assembly;
+                c.IncludeXmlComments(GetXmlDocumentationFileFor(apiAssembly));
+
+                apiAssembly = typeof(BookToAuthorsController).Assembly;
+                c.IncludeXmlComments(GetXmlDocumentationFileFor(apiAssembly));
+
                 // include models xml documentation
                 var modelsAssembly = typeof(Catalog_Models.CatalogModels.Author.AuthorItemCreateUpdateRequest).Assembly;
                 c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
@@ -79,6 +88,11 @@ namespace Catalog_WebAPI
                 c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
 
                 modelsAssembly = typeof(Catalog_Models.CatalogModels.BookToAuthor.BookToAuthorResponse).Assembly;
+                c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
+
+                modelsAssembly = typeof(Catalog_Models.CatalogModels.BookInstance.BookInstanceCreateUpdateRequest).Assembly;
+                c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
+                modelsAssembly = typeof(Catalog_Models.CatalogModels.BookInstance.BookInstanceResponse).Assembly;
                 c.IncludeXmlComments(GetXmlDocumentationFileFor(modelsAssembly));
 
 
