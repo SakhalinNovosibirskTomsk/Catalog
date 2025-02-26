@@ -929,7 +929,7 @@ namespace Catalog_DataAccess.DbInitializer
                                 OnlyForReadingRoom = false,
                                 IsCheckedOut = false,
                                 WriteOffDate = null,
-                                WriteOffReasonId = 1,
+                                WriteOffReasonId = null,
                                 WriteOffUserId = null,
                                 StateId = stateId,
                                 FactCommentId = null,

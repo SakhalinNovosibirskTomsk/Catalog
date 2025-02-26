@@ -318,7 +318,7 @@ namespace Catalog_WebAPI.Controllers
 
 
         /// <summary>
-        /// Получить данные о нахождении экземпляра книги у читатлеля или в библиотеке
+        /// Получить данные о нахождении экземпляра книги у читателя или в библиотеке
         /// </summary>
         /// <param name="id">ИД экземпляра книги</param>
         /// <returns>Возвращает данные об отметке выдачи экземпляра книги читателю - объект BookInstanceIsCheckedOutResponse</returns>
@@ -541,13 +541,13 @@ namespace Catalog_WebAPI.Controllers
                 return BadRequest("Нельзя списывать экземпляр книги будущим временем");
 
             if (request.WriteOffDate != bookInstance.WriteOffDate)
-                request.WriteOffDate = (DateTime)bookInstance.WriteOffDate;
+                bookInstance.WriteOffDate = request.WriteOffDate;
 
             if (request.WriteOffUserId != bookInstance.WriteOffUserId)
-                request.WriteOffUserId = (Guid)bookInstance.WriteOffUserId;
+                bookInstance.WriteOffUserId = request.WriteOffUserId;
 
             if (request.WriteOffReasonId != bookInstance.WriteOffReasonId)
-                request.WriteOffReasonId = (int)bookInstance.WriteOffReasonId;
+                bookInstance.WriteOffReasonId = request.WriteOffReasonId;
 
             var updatedBookInstance = await _bookInstanceRepository.UpdateAsync(bookInstance);
             return Ok(_mapper.Map<BookInstance, BookInstanceWriteOffResponse>(bookInstance));
