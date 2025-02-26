@@ -529,6 +529,7 @@ namespace Catalog_WebAPI.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<BookInstanceWriteOffResponse>> SetWriteOffInfo(int id, BookInstanceUpdateWriteOffRequest request)
         {
+
             var bookInstance = await _bookInstanceRepository.GetBookInstanceByIdAsync(id);
 
             if (bookInstance == null)
