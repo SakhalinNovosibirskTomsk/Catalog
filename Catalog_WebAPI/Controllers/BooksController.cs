@@ -369,6 +369,7 @@ namespace Catalog_WebAPI.Controllers
                 if (System.IO.File.Exists(fullPath))
                 {
                     foundBook.EBookLink = fullPath;
+                    foundBook.EBookDownloadCount = 0;
                     var updatedBook = await _bookRepository.UpdateAsync(foundBook);
 
                     return Ok(_mapper.Map<Book, BookItemResponse>(updatedBook));
@@ -419,6 +420,7 @@ namespace Catalog_WebAPI.Controllers
                         return BadRequest("Ошибка удаления файла: " + ex.Message);
                     }
                     foundBook.EBookLink = "";
+                    foundBook.EBookDownloadCount = 0;
                     var updatedBook = await _bookRepository.UpdateAsync(foundBook);
 
                     return Ok(_mapper.Map<Book, BookItemResponse>(updatedBook));
