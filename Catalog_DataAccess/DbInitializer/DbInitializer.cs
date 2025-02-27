@@ -1,4 +1,4 @@
-﻿using Catalog_DataAccess.CatalogDB;
+﻿using Catalog_Domain.CatalogDB;
 
 namespace Catalog_DataAccess.DbInitializer
 {
@@ -10,11 +10,20 @@ namespace Catalog_DataAccess.DbInitializer
     {
 
         private readonly ApplicationDbContext _db;
+
+        /// <summary>
+        /// Конструктор инициализации БД значениями по умолчанию
+        /// </summary>
+        /// <param name="db">Контекст БД приложения</param>
         public DbInitializer(ApplicationDbContext db)
         {
             _db = db;
         }
 
+
+        /// <summary>
+        /// Метод наполения БД значениями по умолчанию
+        /// </summary>
         public void InitializeDb()
         {
             Console.WriteLine("Инициализация БД: Удаление БД ... ");
@@ -53,6 +62,11 @@ namespace Catalog_DataAccess.DbInitializer
         }
 
 
+        /// <summary>
+        /// Метод заполнения таблицы БД для определённой сущности
+        /// </summary>
+        /// <typeparam name="T">Тип сущности</typeparam>
+        /// <param name="tableList">Список данных для записи в БД</param>
         public void FillTable<T>(List<T> tableList)
         {
             Console.WriteLine("Инициализация БД: Заполнение таблицы Authors ... ");

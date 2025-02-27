@@ -1,4 +1,4 @@
-﻿namespace Catalog_DataAccess.CatalogDB
+﻿namespace Catalog_Domain.CatalogDB
 {
     /// <summary>
     /// Справочник издателей

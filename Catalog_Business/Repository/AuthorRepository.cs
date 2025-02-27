@@ -1,6 +1,6 @@
 ﻿using Catalog_Business.Repository.IRepository;
 using Catalog_DataAccess;
-using Catalog_DataAccess.CatalogDB;
+using Catalog_Domain.CatalogDB;
 using Microsoft.EntityFrameworkCore;
 
 namespace Catalog_Business.Repository

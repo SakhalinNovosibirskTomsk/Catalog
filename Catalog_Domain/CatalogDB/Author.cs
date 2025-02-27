@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Catalog_DataAccess.CatalogDB
+namespace Catalog_Domain.CatalogDB
 {
 
     /// <summary>

@@ -1,5 +1,5 @@
 ﻿using Catalog_Common;
-using Catalog_DataAccess.CatalogDB;
+using Catalog_Domain.CatalogDB;
 
 namespace Catalog_DataAccess.DbInitializer
 {

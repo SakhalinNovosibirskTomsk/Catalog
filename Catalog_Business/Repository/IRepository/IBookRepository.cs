@@ -1,4 +1,4 @@
-﻿using Catalog_DataAccess.CatalogDB;
+﻿using Catalog_Domain.CatalogDB;
 using static Catalog_Common.SD;
 
 namespace Catalog_Business.Repository.IRepository

@@ -1,4 +1,4 @@
-﻿using Catalog_DataAccess.CatalogDB;
+﻿using Catalog_Domain.CatalogDB;
 using Microsoft.EntityFrameworkCore;
 
 namespace Catalog_DataAccess
@@ -9,7 +9,10 @@ namespace Catalog_DataAccess
     /// </summary>
     public class ApplicationDbContext : DbContext
     {
-
+        /// <summary>
+        /// DbContext приложения - конструктор
+        /// </summary>
+        /// <param name="options"></param>
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -46,7 +49,10 @@ namespace Catalog_DataAccess
         public DbSet<BookToAuthor> BookToAuthors { get; set; }
 
 
-
+        /// <summary>
+        /// Настройка сопоставления модели данных с БД
+        /// </summary>
+        /// <param name="modelBuilder">Объект построителя модели</param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // TODO разнести для каждой сужности в отдельный класс или метод настройку БД

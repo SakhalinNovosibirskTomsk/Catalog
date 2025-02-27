@@ -5,6 +5,9 @@
     /// </summary>
     public interface IDbInitializer
     {
+        /// <summary>
+        /// Метод заполения БД начальными значениями сущностей
+        /// </summary>
         public void InitializeDb();
     }
 }

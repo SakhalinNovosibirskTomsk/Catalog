@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Catalog_Business.Repository.IRepository;
 using Catalog_Common;
-using Catalog_DataAccess.CatalogDB;
+using Catalog_Domain.CatalogDB;
 using Catalog_Models.CatalogModels.State;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
