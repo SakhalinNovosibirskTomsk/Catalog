@@ -69,7 +69,6 @@ namespace Catalog_DataAccess.DbInitializer
         /// <param name="tableList">Список данных для записи в БД</param>
         public void FillTable<T>(List<T> tableList)
         {
-            Console.WriteLine("Инициализация БД: Заполнение таблицы Authors ... ");
             using (var transaction = _db.Database.BeginTransaction())
             {
                 try
