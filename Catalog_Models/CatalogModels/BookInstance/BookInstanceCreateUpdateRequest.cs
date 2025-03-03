@@ -29,25 +29,6 @@ namespace Catalog_Models.CatalogModels.BookInstance
         public bool OnlyForReadingRoom { get; set; } = false;
 
         /// <summary>
-        /// ИД статуса состояния книги
-        /// </summary>
-        [Required]
-        [DisplayName("ИД статуса состояния книги")]
-        public int StateId { get; set; }
-
-        /// <summary>
-        /// ИД комментария к статусу состояния книги
-        /// </summary>
-        [DisplayName("ИД комментария к статусу состояния книги")]
-        public int? FactCommentId { get; set; } = null;
-
-        /// <summary>
-        /// Текст комментария к статусу состояния книги
-        /// </summary>
-        [DisplayName("Текст комментария к статусу состояния книги")]
-        public string? FactCommentText { get; set; } = String.Empty;
-
-        /// <summary>
         /// Максимальное кол-во дней, на которые можно выдать читателю экземпляр книги
         /// </summary>
         [Required]

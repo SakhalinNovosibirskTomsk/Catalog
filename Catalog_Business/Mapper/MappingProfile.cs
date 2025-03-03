@@ -5,7 +5,6 @@ using Catalog_Models.CatalogModels.Book;
 using Catalog_Models.CatalogModels.BookInstance;
 using Catalog_Models.CatalogModels.BookToAuthor;
 using Catalog_Models.CatalogModels.Publisher;
-using Catalog_Models.CatalogModels.State;
 
 namespace Catalog_Business.Mapper
 {
@@ -13,8 +12,6 @@ namespace Catalog_Business.Mapper
     {
         public MappingProfile()
         {
-            CreateMap<State, StateItemResponse>();
-            CreateMap<State, StateItemCreateRequest>();
 
             CreateMap<Publisher, PublisherItemResponse>();
             CreateMap<Publisher, PublisherItemCreateUpdateRequest>();
@@ -42,12 +39,9 @@ namespace Catalog_Business.Mapper
 
             CreateMap<BookInstance, BookInstanceCreateUpdateRequest>().ReverseMap();
             CreateMap<BookInstance, BookInstanceResponse>();
-            CreateMap<BookInstance, BookInstanceUpdateStateRequest>();
-            CreateMap<BookInstance, BookInstanceUpdateWriteOffRequest>();
             CreateMap<BookInstance, BookInstanceIsCheckedOutResponse>();
-            CreateMap<BookInstance, BookInstanceStateResponse>();
-            CreateMap<BookInstance, BookInstanceWriteOffResponse>();
-
+            CreateMap<BookInstance, BookInstanceIsWroteOffResponse>();
+            CreateMap<BookInstance, BookInstanceIsBookedResponse>();
 
         }
     }

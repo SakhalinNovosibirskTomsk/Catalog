@@ -39,11 +39,6 @@ namespace Catalog_DataAccess
         public DbSet<Publisher> Publishers { get; set; }
 
         /// <summary>
-        /// Статусы состояния экземпляра книги
-        /// </summary>
-        public DbSet<State> States { get; set; }
-
-        /// <summary>
         /// Связь книг с акторами
         /// </summary>
         public DbSet<BookToAuthor> BookToAuthors { get; set; }
@@ -56,57 +51,6 @@ namespace Catalog_DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // TODO разнести для каждой сужности в отдельный класс или метод настройку БД
-
-            //------------------------------------------------------------------
-            // Статусы
-            //------------------------------------------------------------------
-            modelBuilder.Entity<State>()
-                .ToTable("States")
-                .ToTable(t => t.HasComment("Справочник статусов состояния экземпляров книг"));
-
-
-            modelBuilder.Entity<State>()
-                .HasKey(u => u.Id);
-
-            modelBuilder.Entity<State>()
-                .HasIndex(nameof(State.Name))
-                .IsUnique()
-                .HasDatabaseName(nameof(State) + nameof(State.Name));
-
-            modelBuilder.Entity<State>()
-                .Property(u => u.Id)
-                .HasComment("ИД записи")
-                .IsRequired();
-
-            modelBuilder.Entity<State>()
-                .Property(u => u.Name)
-                .HasComment("Наименование статуса состояния экземпляра книги")
-                .IsRequired()
-                .HasMaxLength(100);
-
-            modelBuilder.Entity<State>()
-                .Property(u => u.Description)
-                .HasComment("Описание статуса состояния экземпляра книги")
-                .HasMaxLength(1000);
-
-            modelBuilder.Entity<State>()
-                .Property(u => u.IsInitialState)
-                .HasComment("Признак, что состояние является исходным (например, присваивается по умолчанию при поступлении нового экземпляра книги)")
-                .IsRequired()
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<State>()
-                .Property(u => u.IsNeedComment)
-                .HasComment("Признак, что при выставлении данного состояния экземпляру книги (например, при возврате) требуется обязательный комментарий")
-                .IsRequired()
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<State>()
-                .Property(u => u.IsArchive)
-                .HasComment("Признак удаления записи в архив")
-                .IsRequired()
-                .HasDefaultValue(false);
-            //------------------------------------------------------------------
 
             //------------------------------------------------------------------
             // Издатели
@@ -338,11 +282,6 @@ namespace Catalog_DataAccess
             modelBuilder.Entity<BookInstance>()
                 .ToTable("BookInstances")
                 .ToTable(t => t.HasComment("Экземпляры книг"))
-                .HasOne(s => s.State)
-                .WithMany(b => b.BookInstanceList)
-                .HasForeignKey(k => k.StateId);
-
-            modelBuilder.Entity<BookInstance>()
                 .HasOne(s => s.Book)
                 .WithMany(b => b.BookInstanceList)
                 .HasForeignKey(k => k.BookId);
@@ -367,8 +306,18 @@ namespace Catalog_DataAccess
                 .IsRequired();
 
             modelBuilder.Entity<BookInstance>()
-                .Property(u => u.ReceiptDate)
-                .HasComment("Дата получения экземпляра книги в библиотеку")
+                .Property(u => u.IsCheckedOut)
+                .HasComment("Признак, что в данный момент экземпляр книги выдан читателю")
+                .IsRequired();
+
+            modelBuilder.Entity<BookInstance>()
+                .Property(u => u.IsBooked)
+                .HasComment("Признак, что в данный момент экземпляр книги забронирован читателем")
+                .IsRequired();
+
+            modelBuilder.Entity<BookInstance>()
+                .Property(u => u.IsWroteOff)
+                .HasComment("Признак, что в данный момент экземпляр книги списан")
                 .IsRequired();
 
             modelBuilder.Entity<BookInstance>()
@@ -377,56 +326,10 @@ namespace Catalog_DataAccess
                 .IsRequired();
 
             modelBuilder.Entity<BookInstance>()
-                .Property(u => u.IsCheckedOut)
-                .HasComment("Признак, что в данный момент экземпляр книги выдан читателю")
-                .IsRequired();
-
-            modelBuilder.Entity<BookInstance>()
-                .Property(u => u.WriteOffDate)
-                .HasComment("Дата списания экземпляра книги из библиотеку");
-
-            modelBuilder.Entity<BookInstance>()
-                .Property(u => u.WriteOffReasonId)
-                .HasComment("ИД причины списания экземпляра книги из библиотеки");
-
-            modelBuilder.Entity<BookInstance>()
-                .Property(u => u.WriteOffUserId)
-                .HasComment("ИД пользователя списавшего экземпляр книги");
-
-            modelBuilder.Entity<BookInstance>()
-                .Property(u => u.StateId)
-                .HasComment("ИД статуса состояния книги")
-                .IsRequired();
-
-            modelBuilder.Entity<BookInstance>()
-                .Property(u => u.FactCommentId)
-                .HasComment("ИД комментария к статусу состояния книги");
-
-            modelBuilder.Entity<BookInstance>()
-                .Property(u => u.FactCommentText)
-                .HasComment("Текст комментария к статусу состояния книги");
-
-            modelBuilder.Entity<BookInstance>()
                 .Property(u => u.OutMaxDays)
                 .HasComment("Максимальное кол-во дней, на которые можно выдать читателю экземпляр книги")
                 .IsRequired()
                 .HasDefaultValue(14);
-
-            modelBuilder.Entity<BookInstance>()
-                .Property(u => u.AddUserId)
-                .HasComment("ИД пользователя добавившего запись")
-                .IsRequired();
-
-            modelBuilder.Entity<BookInstance>()
-                .Property(u => u.AddTime)
-                .HasComment("Дата/время добавления записи")
-                .IsRequired();
-
-            modelBuilder.Entity<BookInstance>()
-                .Property(u => u.IsArchive)
-                .HasComment("Признак удаления записи в архив")
-                .IsRequired()
-                .HasDefaultValue(false);
 
             //------------------------------------------------------------------
         }

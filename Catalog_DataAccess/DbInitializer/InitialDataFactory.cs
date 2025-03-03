@@ -396,88 +396,6 @@ namespace Catalog_DataAccess.DbInitializer
                 },
         };
 
-        /// <summary>
-        /// Статусы состояния экземпляров книги
-        /// </summary>
-        public static List<State> States => new List<State>()
-        {
-            new State
-            {
-                Id = 1,
-                Name = "Отличное",
-                Description = "Новая или \"как новая\". Присваивается при поступлении нового экземпляра книги в библиотеку. Остаётся до тех пор, пока книга "+
-                                "не измент своё сотояние на отличное от изначального",
-                IsInitialState = true,
-                IsNeedComment  = false,
-                IsArchive = false,
-            },
-             new State
-            {
-                Id = 2,
-                Name = "Хорошее",
-                Description = "Незначительные потёртости на обложке, пожелтение страниц и прочие \"повреждения временем\" "+
-                                "без следов умышленной порчи или вследвие небрежного отношения",
-                IsInitialState = false,
-                IsNeedComment  = true,
-                IsArchive = false,
-             },
-             new State
-             {
-                Id = 3,
-                Name = "Среднее",
-                Description = "Есть следы умышленного или вследсвие небрежного отношения повреждения - мятые страницы, небольшие (не больше 3 см) порывы страниц. "+
-                               "Следы чернил, надписей или иных загрязнений на некоторых страницах и/или обложке, не носящие массовый характер и не " +
-                               "мешающие восприятию текста, картинок, рисунков и прочего материала книги",
-                IsInitialState = false,
-                IsNeedComment  = true,
-                IsArchive = false,
-             },
-             new State
-             {
-                Id = 4,
-                Name = "Удовлетворительное",
-                Description = "Экземпляр заметно отличается от изначального (нового). Загрязнения, рваные страницы, надписи/заметки на страницах и обложке. " +
-                 "При этом состояние не откладывает существенного влияние на возможность восприятия информации, представленной в книге",
-                IsInitialState = false,
-                IsNeedComment  = true,
-                IsArchive = false,
-             },
-             new State
-             {
-                Id = 5,
-                Name = "Плохое",
-                Description = "Рваные или вырваные страницы, сильные повреждения обложки, большое количество надписей и загрязнений. Инфоомация считываема, но " +
-                    "некоторые предложения могут быть не полностью читаемы.",
-                IsInitialState = false,
-                IsNeedComment  = true,
-                IsArchive = false,
-             },
-             new State
-             {
-                Id = 6,
-                Name = "Под списание",
-                Description = "Рваные или вырваные страницы. Некоторые страницы утеряны или информация на них невоспроизводима или воспроизводима " +
-                    "со значительными затруднениями. Состояние, которое даже при редкости экземпляра книги не позволяет полноценно ей пользоваться " +
-                    "и возникает вопрос о целесообразности хранения его в библиотеке",
-                IsInitialState = false,
-                IsNeedComment  = true,
-                IsArchive = false,
-             },
-             new State
-             {
-                Id = 7,
-                Name = "Устарела",
-                Description = "Особый статус, обозначающий неактуальность информации отражённой к экземпляре вплоть до введения читателя в заблждение." +
-                    "Например, научная литература, объясняющая теорию, которая из-за новых исследований опровергнута и её использование при подготовке " +
-                    "к экзаменам или работам учащимися может привести к снижению оценки или не сдаче работы или предмета. " +
-                    "Статус может быть похож на статус \"Под списание\", если специалисты по предмету решат, что наличие книги в библиотеке и возможность " +
-                    "ознакомления с её содержимым учащимися несёт больше вреда, чем пользы от возможности удовлетворения академического интереса по изучению "+
-                    "истоиии предмета или теории.",
-                IsInitialState = false,
-                IsNeedComment  = true,
-                IsArchive = false,
-             },
-        };
 
         /// <summary>
         /// Книги
@@ -908,7 +826,6 @@ namespace Catalog_DataAccess.DbInitializer
         {
             get
             {
-                var stateId = States.FirstOrDefault(x => x.Name == "Отличное").Id;
                 var bookInstanceList = new List<BookInstance>();
                 int bookInstanceIdcounter = 0;
                 foreach (var book in Books)
@@ -925,20 +842,11 @@ namespace Catalog_DataAccess.DbInitializer
                                 Id = bookInstanceIdcounter,
                                 BookId = book.Id,
                                 InventoryNumber = "100001_" + bookInstanceIdcounter.ToString(),
-                                ReceiptDate = DateTime.Now,
-                                OnlyForReadingRoom = false,
                                 IsCheckedOut = (book.Id == 1 && bookInstanceIdcounter == 1 ? true : false),
-                                WriteOffDate = null,
-                                WriteOffReasonId = null,
-                                WriteOffUserId = null,
-                                StateId = (book.Id == 1 && bookInstanceIdcounter == 1 ? 5 : stateId),
-                                FactCommentId = (book.Id == 1 && bookInstanceIdcounter == 1 ? 3 : null),
-                                FactCommentText = (book.Id == 1 && bookInstanceIdcounter == 1 ?
-                                    "На обложке и некоторых страницах жирные пятна. Некоторые (больше 10) сраниц склеены скотчем. Страницы с содержанием утеряны." : null),
+                                IsBooked = false,
+                                IsWroteOff = false,
+                                OnlyForReadingRoom = false,
                                 OutMaxDays = 14,
-                                AddUserId = SD.UserIdForInitialData,
-                                AddTime = DateTime.Now,
-                                IsArchive = false,
                             }
                         );
                     }

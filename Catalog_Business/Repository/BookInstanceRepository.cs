@@ -1,8 +1,8 @@
 ﻿using Catalog_Business.Repository.IRepository;
+using Catalog_Common;
 using Catalog_DataAccess;
 using Catalog_Domain.CatalogDB;
 using Microsoft.EntityFrameworkCore;
-using static Catalog_Common.SD;
 
 namespace Catalog_Business.Repository
 {
@@ -12,32 +12,58 @@ namespace Catalog_Business.Repository
         {
         }
 
-        public async Task<IEnumerable<BookInstance>> GetAllBookInstancesAsync(GetAllItems? getAllItems = GetAllItems.All)
+        public async Task<IEnumerable<BookInstance>> GetAllBookInstancesAsync()
         {
-            switch (getAllItems)
+            var gotBookInstances = _db.BookInstances
+                .Include(b => b.Book)
+                .ToList();
+
+            return gotBookInstances;
+        }
+
+        public async Task<IEnumerable<BookInstance>> GetAllBookInstancesByFlagsAsync(SD.BookInstancesFags bookInstancesFag, bool isTrue = false)
+        {
+            switch (bookInstancesFag)
             {
-                case GetAllItems.All:
+                case SD.BookInstancesFags.IsCheckedOut:
                     {
                         var gotBookInstances = _db.BookInstances
+                            .Where(u => u.IsCheckedOut == isTrue)
                             .Include(b => b.Book)
-                            .Include(s => s.State)
                             .ToList();
 
                         return gotBookInstances;
                     }
-                case GetAllItems.ArchiveOnly:
+                case SD.BookInstancesFags.IsBooked:
                     {
-                        var gotBookInstances = _db.BookInstances.Where(u => u.IsArchive == true)
+                        var gotBookInstances = _db.BookInstances
+                            .Where(u => u.IsBooked == isTrue)
                             .Include(b => b.Book)
-                            .Include(s => s.State)
+                            .ToList();
+
+                        return gotBookInstances;
+                    }
+                case SD.BookInstancesFags.IsWroteOff:
+                    {
+                        var gotBookInstances = _db.BookInstances
+                            .Where(u => u.IsWroteOff == isTrue)
+                            .Include(b => b.Book)
                             .ToList();
                         return gotBookInstances;
                     }
-                case GetAllItems.NotArchiveOnly:
+                case SD.BookInstancesFags.IsFree:
                     {
-                        var gotBookInstances = _db.BookInstances.Where(u => u.IsArchive != true)
+                        var gotBookInstances = _db.BookInstances
+                            .Where(u => u.IsCheckedOut != true && u.IsBooked != true && u.IsWroteOff != true)
                             .Include(b => b.Book)
-                            .Include(s => s.State)
+                            .ToList();
+                        return gotBookInstances;
+                    }
+                case SD.BookInstancesFags.IsBusy:
+                    {
+                        var gotBookInstances = _db.BookInstances
+                            .Where(u => u.IsCheckedOut == true || u.IsBooked == true || u.IsWroteOff == true)
+                            .Include(b => b.Book)
                             .ToList();
                         return gotBookInstances;
                     }
@@ -45,47 +71,26 @@ namespace Catalog_Business.Repository
                     {
                         var gotBookInstances = _db.BookInstances
                             .Include(b => b.Book)
-                            .Include(s => s.State)
                             .ToList();
                         return gotBookInstances;
                     }
             }
+
         }
 
         public async Task<IEnumerable<BookInstance>> GetBookInstancesByBookIdAsync(int bookId)
         {
             var gotBookInstances = _db.BookInstances.Where(u => u.BookId == bookId)
                 .Include(b => b.Book)
-                .Include(s => s.State)
                 .ToList();
             return gotBookInstances;
 
-        }
-
-        public async Task<IEnumerable<BookInstance>> GetBookInstancesByStateIdAsync(int stateId)
-        {
-            var gotBookInstances = _db.BookInstances.Where(u => u.StateId == stateId)
-                .Include(b => b.Book)
-                .Include(s => s.State)
-                .ToList();
-            return gotBookInstances;
-        }
-
-
-        public async Task<IEnumerable<BookInstance>> GetBookInstancesByBookIdAndStateIdAsync(int bookId, int stateId)
-        {
-            var gotBookInstances = _db.BookInstances.Where(u => u.BookId == bookId && u.StateId == stateId)
-                .Include(b => b.Book)
-                .Include(s => s.State)
-                .ToList();
-            return gotBookInstances;
         }
 
         public async Task<BookInstance> GetBookInstanceByIdAsync(int id)
         {
             var gotBookInstance = _db.BookInstances
                             .Include(b => b.Book)
-                            .Include(s => s.State)
                             .FirstOrDefault(u => u.Id == id);
 
             return gotBookInstance;
@@ -95,7 +100,6 @@ namespace Catalog_Business.Repository
         {
             var gotBookInstance = _db.BookInstances
                 .Include(b => b.Book)
-                .Include(s => s.State)
                 .FirstOrDefault(u => u.InventoryNumber.Trim().ToUpper() == inventoryNumber.Trim().ToUpper());
 
             return gotBookInstance;

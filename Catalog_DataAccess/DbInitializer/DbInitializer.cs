@@ -44,10 +44,6 @@ namespace Catalog_DataAccess.DbInitializer
             FillTable<Publisher>(InitialDataFactory.Publishers);
             Console.WriteLine("Инициализация БД: Заполнение таблицы Publishers - Выполнено");
 
-            Console.WriteLine("Инициализация БД: Заполнение таблицы States ... ");
-            FillTable<State>(InitialDataFactory.States);
-            Console.WriteLine("Инициализация БД: Заполнение таблицы States - Выполнено");
-
             Console.WriteLine("Инициализация БД: Заполнение таблицы Books ... ");
             FillTable<Book>(InitialDataFactory.Books);
             Console.WriteLine("Инициализация БД: Заполнение таблицы Books - Выполнено");

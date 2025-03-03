@@ -18,19 +18,16 @@ namespace Catalog_WebAPI.Controllers
     {
         private readonly IAuthorRepository _authorRepository;
         private readonly IBookRepository _bookRepository;
-        private readonly IStateRepository _stateRepository;
         private readonly IBookInstanceRepository _bookInstanceRepository;
         private readonly IMapper _mapper;
 
         public BookInstancesController(IAuthorRepository authorRepository,
             IBookRepository bookRepository,
-            IStateRepository stateRepository,
             IBookInstanceRepository bookInstanceRepository,
             IMapper mapper)
         {
             _authorRepository = authorRepository;
             _bookRepository = bookRepository;
-            _stateRepository = stateRepository;
             _bookInstanceRepository = bookInstanceRepository;
             _mapper = mapper;
         }
@@ -46,7 +43,7 @@ namespace Catalog_WebAPI.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<List<BookInstanceResponse>>> GetAllBookInstancesAsync()
         {
-            var gotBookInstances = await _bookInstanceRepository.GetAllBookInstancesAsync(SD.GetAllItems.All);
+            var gotBookInstances = await _bookInstanceRepository.GetAllBookInstancesAsync();
             if (gotBookInstances == null || gotBookInstances.Count() <= 0)
                 return NotFound("Не найдено ни одного экземпляра книг");
             var retVar = _mapper.Map<IEnumerable<BookInstance>, IEnumerable<BookInstanceResponse>>(gotBookInstances);
@@ -54,38 +51,146 @@ namespace Catalog_WebAPI.Controllers
         }
 
         /// <summary>
-        /// Получить список всех экземпляров книг находящихся в архиве
+        /// Получить список всех экземпляров книг выданых читателю
         /// </summary>
-        /// <returns>Возвращает все экземпляры книг находящиеся в архиве - список объектов типа BookInstanceResponse</returns>
+        /// <returns>Возвращает все экземпляры книг выданые читателям - список объектов типа BookInstanceResponse</returns>
         /// <response code="200">Успешное выполнение</response>
-        /// <response code="404">Экземпляров книг находящихся в архиве не найдено</response>
-        [HttpGet("AllInArchive")]
+        /// <response code="404">Экземпляров книг выданых читателю не найдено</response>
+        [HttpGet("AllIsCheckedOut")]
         [ProducesResponseType(typeof(List<BookInstanceResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<List<BookInstanceResponse>>> GetAllBookInstancesInArchiveAsync()
+        public async Task<ActionResult<List<BookInstanceResponse>>> GetAllBookInstancesIsCheckedOutAsync()
         {
-            var gotBookInstances = await _bookInstanceRepository.GetAllBookInstancesAsync(SD.GetAllItems.ArchiveOnly);
+            var gotBookInstances = await _bookInstanceRepository.GetAllBookInstancesByFlagsAsync(SD.BookInstancesFags.IsCheckedOut, true);
             if (gotBookInstances == null || gotBookInstances.Count() <= 0)
-                return NotFound("Экземпляров книг находящихся в архиве не найдено");
+                return NotFound("Экземпляров книг выданых читателю не найдено");
             return Ok(_mapper.Map<IEnumerable<BookInstance>, IEnumerable<BookInstanceResponse>>(gotBookInstances));
         }
 
         /// <summary>
-        /// Получить список всех экземпляров книг находящихся НЕ в архиве
+        /// Получить список всех экземпляров книг НЕ выданых читателю
         /// </summary>
-        /// <returns>Возвращает все экземпляры книг находящиеся НЕ в архиве - список объектов типа BookInstanceResponse</returns>
+        /// <returns>Возвращает все экземпляры книг, которые в данный момент не выданы читателям - список объектов типа BookInstanceResponse</returns>
         /// <response code="200">Успешное выполнение</response>
-        /// <response code="404">Экземпляров книг НЕ в архиве не найдено</response>
-        [HttpGet("AllNotInArchive")]
+        /// <response code="404">Экземпляров книг не выданых читателю не найдено</response>
+        [HttpGet("AllIsNotCheckedOut")]
         [ProducesResponseType(typeof(List<BookInstanceResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<List<BookInstanceResponse>>> GetAllBookInstancesNotInArchiveAsync()
+        public async Task<ActionResult<List<BookInstanceResponse>>> GetAllBookInstancesIsNotCheckedOutAsync()
         {
-            var gotBookInstances = await _bookInstanceRepository.GetAllBookInstancesAsync(SD.GetAllItems.NotArchiveOnly);
+            var gotBookInstances = await _bookInstanceRepository.GetAllBookInstancesByFlagsAsync(SD.BookInstancesFags.IsCheckedOut, false);
             if (gotBookInstances == null || gotBookInstances.Count() <= 0)
-                return NotFound("Экземпляров книг НЕ в архиве не найдено");
+                return NotFound("Экземпляров книг не выданых в данный момент читателю не найдено");
             return Ok(_mapper.Map<IEnumerable<BookInstance>, IEnumerable<BookInstanceResponse>>(gotBookInstances));
         }
+
+
+        /// <summary>
+        /// Получить список всех экземпляров книг забронированных на данный момент читателями
+        /// </summary>
+        /// <returns>Возвращает все экземпляры книг забронированные на данный момент читателями - список объектов типа BookInstanceResponse</returns>
+        /// <response code="200">Успешное выполнение</response>
+        /// <response code="404">Экземпляров книг забронированных на данный момент читателями не найдено</response>
+        [HttpGet("AllIsBooked")]
+        [ProducesResponseType(typeof(List<BookInstanceResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<List<BookInstanceResponse>>> GetAllBookInstancesIsBookedAsync()
+        {
+            var gotBookInstances = await _bookInstanceRepository.GetAllBookInstancesByFlagsAsync(SD.BookInstancesFags.IsBooked, true);
+            if (gotBookInstances == null || gotBookInstances.Count() <= 0)
+                return NotFound("Экземпляров книг забронированных на данный момент читателями не найдено");
+            return Ok(_mapper.Map<IEnumerable<BookInstance>, IEnumerable<BookInstanceResponse>>(gotBookInstances));
+        }
+
+        /// <summary>
+        /// Получить список всех экземпляров книг не забронированных на данный момент читателями
+        /// </summary>
+        /// <returns>Возвращает все экземпляры книг, которые не забронированы на данный момент читателями - список объектов типа BookInstanceResponse</returns>
+        /// <response code="200">Успешное выполнение</response>
+        /// <response code="404">Экземпляров книг не забронированных на данный момент читателями не найдено</response>
+        [HttpGet("AllIsNotBooked")]
+        [ProducesResponseType(typeof(List<BookInstanceResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<List<BookInstanceResponse>>> GetAllBookInstancesIsNotBookedAsync()
+        {
+            var gotBookInstances = await _bookInstanceRepository.GetAllBookInstancesByFlagsAsync(SD.BookInstancesFags.IsBooked, false);
+            if (gotBookInstances == null || gotBookInstances.Count() <= 0)
+                return NotFound("Экземпляров книг не забронированных на данный момент читателями не найдено");
+            return Ok(_mapper.Map<IEnumerable<BookInstance>, IEnumerable<BookInstanceResponse>>(gotBookInstances));
+        }
+
+
+
+
+        /// <summary>
+        /// Получить все списанные экземпляры книг
+        /// </summary>
+        /// <returns>Возвращает все списанные экземпляры книг - список объектов типа BookInstanceResponse</returns>
+        /// <response code="200">Успешное выполнение</response>
+        /// <response code="404">Списанные экземпляры книг не найдены</response>
+        [HttpGet("AllIsWroteOff")]
+        [ProducesResponseType(typeof(List<BookInstanceResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<List<BookInstanceResponse>>> GetAllBookInstancesIsWroteOffAsync()
+        {
+            var gotBookInstances = await _bookInstanceRepository.GetAllBookInstancesByFlagsAsync(SD.BookInstancesFags.IsWroteOff, true);
+            if (gotBookInstances == null || gotBookInstances.Count() <= 0)
+                return NotFound("Списанные экземпляры книг не найдены");
+            return Ok(_mapper.Map<IEnumerable<BookInstance>, IEnumerable<BookInstanceResponse>>(gotBookInstances));
+        }
+
+        /// <summary>
+        /// Получить все НЕ списанные экземпляры книг
+        /// </summary>
+        /// <returns>Возвращает все НЕ списанные экземпляры книг - список объектов типа BookInstanceResponse</returns>
+        /// <response code="200">Успешное выполнение</response>
+        /// <response code="404">Не списанные экземпляры книг не найдены</response>
+        [HttpGet("AllIsNotWroteOff")]
+        [ProducesResponseType(typeof(List<BookInstanceResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<List<BookInstanceResponse>>> GetAllBookInstancesIsNotWroteOffAsync()
+        {
+            var gotBookInstances = await _bookInstanceRepository.GetAllBookInstancesByFlagsAsync(SD.BookInstancesFags.IsWroteOff, false);
+            if (gotBookInstances == null || gotBookInstances.Count() <= 0)
+                return NotFound("Не списанные экземпляры книг не найдены");
+            return Ok(_mapper.Map<IEnumerable<BookInstance>, IEnumerable<BookInstanceResponse>>(gotBookInstances));
+        }
+
+        /// <summary>
+        /// Получить все свободные экземпляры книг (одновременно не списаны, не выданы, не забронированны)
+        /// </summary>
+        /// <returns>Все свободные экземпляры книг (не списаны, не выданы, не забронированны) - список объектов типа BookInstanceResponse</returns>
+        /// <response code="200">Успешное выполнение</response>
+        /// <response code="404">Свободные экземпляры книг (одновременно не списаны, не выданы, не забронированны) не найдены</response>
+        [HttpGet("AllIsFree")]
+        [ProducesResponseType(typeof(List<BookInstanceResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<List<BookInstanceResponse>>> GetAllBookInstancesIsFreeAsync()
+        {
+            var gotBookInstances = await _bookInstanceRepository.GetAllBookInstancesByFlagsAsync(SD.BookInstancesFags.IsFree);
+            if (gotBookInstances == null || gotBookInstances.Count() <= 0)
+                return NotFound("Свободные экземпляры книг (одновременно не списаны, не выданы, не забронированны) не найдены");
+            return Ok(_mapper.Map<IEnumerable<BookInstance>, IEnumerable<BookInstanceResponse>>(gotBookInstances));
+        }
+
+
+        /// <summary>
+        /// Получить все занятые экземпляры книг (или списаны, или выданы, или забронированны)
+        /// </summary>
+        /// <returns>Все занятые экземпляры книг (или списаны, или выданы, или забронированны) - список объектов типа BookInstanceResponse</returns>
+        /// <response code="200">Успешное выполнение</response>
+        /// <response code="404">Занятые экземпляры книг (или списаны, или выданы, или забронированны) не найдены</response>
+        [HttpGet("AllIsBusy")]
+        [ProducesResponseType(typeof(List<BookInstanceResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<List<BookInstanceResponse>>> GetAllBookInstancesIsBusyAsync()
+        {
+            var gotBookInstances = await _bookInstanceRepository.GetAllBookInstancesByFlagsAsync(SD.BookInstancesFags.IsBusy);
+            if (gotBookInstances == null || gotBookInstances.Count() <= 0)
+                return NotFound("Занятые экземпляры книг (или списаны, или выданы, или забронированны) не найдены");
+            return Ok(_mapper.Map<IEnumerable<BookInstance>, IEnumerable<BookInstanceResponse>>(gotBookInstances));
+        }
+
 
         /// <summary>
         /// Получить список всех экземпляров по ИД книги
@@ -104,45 +209,6 @@ namespace Catalog_WebAPI.Controllers
                 return NotFound("Экземпляров книги с ИД книги = " + bookId.ToString() + " не найдено");
             return Ok(_mapper.Map<IEnumerable<BookInstance>, IEnumerable<BookInstanceResponse>>(gotBookInstances));
         }
-
-        /// <summary>
-        /// Получить список всех экземпляров по ИД статуса состояния экземпляра
-        /// </summary>
-        /// <param name="stateId">ИД статуса состояния экземпляра</param>
-        /// <returns>Возвращает все экземпляры книги с указанным ИД статуса состояния экземпляра - список объектов типа BookInstanceResponse</returns>
-        /// <response code="200">Успешное выполнение</response>
-        /// <response code="404">Экземпляры книги с заданным ИД статуса состояния экземпляра не найдены</response>
-        [HttpGet("GetBookInstancesByStateId/{stateId}")]
-        [ProducesResponseType(typeof(List<BookInstanceResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<List<BookInstanceResponse>>> GetBookInstancesByStateIdAsync(int stateId)
-        {
-            var gotBookInstances = await _bookInstanceRepository.GetBookInstancesByStateIdAsync(stateId);
-            if (gotBookInstances == null || gotBookInstances.Count() <= 0)
-                return NotFound("Экземпляры книги с заданным ИД статуса состояния экземпляра = " + stateId.ToString() + " не найдено");
-            return Ok(_mapper.Map<IEnumerable<BookInstance>, IEnumerable<BookInstanceResponse>>(gotBookInstances));
-        }
-
-
-        /// <summary>
-        /// Получить список всех экземпляров по ИД книги и ИД статуса состояния экземпляра
-        /// </summary>
-        /// <param name="bookId">ИД книги</param>
-        /// <param name="stateId">ИД статуса состояния экземпляра</param>
-        /// <returns>Возвращает все экземпляры книги с указанными ИД книги и ИД статуса состояния экземпляра - список объектов типа BookInstanceResponse</returns>
-        /// <response code="200">Успешное выполнение</response>
-        /// <response code="404">Экземпляры книги с заданными ИД книги и ИД статуса состояния экземпляра не найдены</response>
-        [HttpGet("GetBookInstancesByBookIdAndStateId/{bookId}/{stateId}")]
-        [ProducesResponseType(typeof(List<BookInstanceResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<List<BookInstanceResponse>>> GetBookInstancesByBookIdAndStateIdAsync(int bookId, int stateId)
-        {
-            var gotBookInstances = await _bookInstanceRepository.GetBookInstancesByBookIdAndStateIdAsync(bookId, stateId);
-            if (gotBookInstances == null || gotBookInstances.Count() <= 0)
-                return NotFound("Экземпляров книги с заданными ИД книги = " + bookId.ToString() + " и ИД статуса состояния экземпляра = " + stateId.ToString() + " не найдено");
-            return Ok(_mapper.Map<IEnumerable<BookInstance>, IEnumerable<BookInstanceResponse>>(gotBookInstances));
-        }
-
 
 
         /// <summary>
@@ -186,47 +252,14 @@ namespace Catalog_WebAPI.Controllers
             if (foundBookById == null)
                 return NotFound("Не найдена книга с ИД = " + request.BookId.ToString() + " в справочнике книг");
 
-            var foundStateById = await _stateRepository.GetByIdAsync(request.StateId);
-            if (foundStateById == null)
-                return NotFound("Не найден статус с ИД = " + request.StateId.ToString() + " в справочнике статусов состояний экземпляров книг");
-
-            if (foundStateById.IsNeedComment)
-            {
-                if (request.FactCommentId == null || request.FactCommentId <= 0)
-                    return BadRequest("Статус с ИД = " + request.StateId.ToString() + " (наименование = " + foundStateById.Name + ")"
-                        + " требует комментария, но request.FactCommentId пустое. Для статусов, требующих комментария (State.IsNeedComment = true) "
-                        + "при создании экземпляра книги с таким статусов необходимо, чтобы поля FactCommentId и FactCommentText были заполнены.");
-
-                if (String.IsNullOrWhiteSpace(request.FactCommentText))
-                    return BadRequest("Статус с ИД = " + request.StateId.ToString() + " (наименование = " + foundStateById.Name + ")"
-                        + " требует комментария, но request.FactCommentText пустое. Для статусов, требующих комментария (State.IsNeedComment = true) "
-                        + "при создании экземпляра книги с таким статусов необходимо, чтобы поля FactCommentId и FactCommentText были заполнены.");
-            }
-
             var foundBookInstanceByInventoryNumber = await _bookInstanceRepository.GetBookInstanceByInventoryNumberAsync(request.InventoryNumber);
-            if (foundBookInstanceByInventoryNumber == null)
+            if (foundBookInstanceByInventoryNumber != null)
             {
                 return BadRequest("Уже есть экземпляр книги с InventoryNumber = " + request.InventoryNumber + " (ИД экземпляра книги = " + foundBookInstanceByInventoryNumber.Id.ToString() + ")");
             }
 
             if (request.OutMaxDays < 0)
                 return BadRequest("Поле OutMaxDays не может быть отрицательным");
-
-            //var newBookInstance =
-            //    new BookInstance
-            //    {
-            //        BookId = request.BookId,
-            //        InventoryNumber = request.InventoryNumber,
-            //        ReceiptDate = DateTime.Now,
-            //        OnlyForReadingRoom = request.OnlyForReadingRoom,
-            //        StateId = request.StateId,
-            //        FactCommentId = request.FactCommentId,
-            //        FactCommentText = request.FactCommentText,
-            //        OutMaxDays = request.OutMaxDays,
-            //        AddUserId = SD.UserIdForInitialData,
-            //        AddTime = DateTime.Now,
-            //        IsArchive = false
-            //    };
 
             var newBookInstance = _mapper.Map<BookInstanceCreateUpdateRequest, BookInstance>(request);
 
@@ -271,22 +304,6 @@ namespace Catalog_WebAPI.Controllers
                     return BadRequest("Уже есть эезнемпляр книги с InventoryNumber = " + request.InventoryNumber +
                         " (ИД экземпляра книги = " + foundBookInstanceByInventoryNumber.Id.ToString());
 
-            var foundStateById = await _stateRepository.GetByIdAsync(request.StateId);
-            if (foundStateById == null)
-                return NotFound("Не найден статус с ИД = " + request.StateId.ToString() + " в справочнике статусов состояний экземпляров книг");
-
-            if (foundStateById.IsNeedComment)
-            {
-                if (request.FactCommentId == null || request.FactCommentId <= 0)
-                    return BadRequest("Статус с ИД = " + request.StateId.ToString() + " (наименование = " + foundStateById.Name + ")"
-                        + " требует комментария, но поле FactCommentId пустое. Для статусов, требующих комментария (State.IsNeedComment = true) "
-                        + "при создании экземпляра книги с таким статусом необходимо, чтобы поля FactCommentId и FactCommentText были заполнены.");
-
-                if (String.IsNullOrWhiteSpace(request.FactCommentText))
-                    return BadRequest("Статус с ИД = " + request.StateId.ToString() + " (наименование = " + foundStateById.Name + ")"
-                        + " требует комментария, но поле FactCommentText пустое. Для статусов, требующих комментария (State.IsNeedComment = true) "
-                        + "при создании экземпляра книги с таким статусом необходимо, чтобы поля FactCommentId и FactCommentText были заполнены.");
-            }
 
             if (request.OutMaxDays < 0)
                 return BadRequest("Поле OutMaxDays не может быть отрицательным");
@@ -299,15 +316,6 @@ namespace Catalog_WebAPI.Controllers
 
             if (request.OnlyForReadingRoom != foundBookInstanceById.OnlyForReadingRoom)
                 foundBookInstanceById.OnlyForReadingRoom = request.OnlyForReadingRoom;
-
-            if (request.StateId != foundBookInstanceById.StateId)
-                foundBookInstanceById.StateId = request.StateId;
-
-            if (request.FactCommentId != foundBookInstanceById.FactCommentId)
-                foundBookInstanceById.FactCommentId = request.FactCommentId;
-
-            if (request.FactCommentText != foundBookInstanceById.FactCommentText)
-                foundBookInstanceById.FactCommentText = request.FactCommentText;
 
             if (request.OutMaxDays != foundBookInstanceById.OutMaxDays)
                 foundBookInstanceById.OutMaxDays = request.OutMaxDays;
@@ -355,7 +363,7 @@ namespace Catalog_WebAPI.Controllers
             if (foundBookInstance == null)
                 return NotFound("Экземпляр книги с ИД = " + id.ToString() + " не найден.");
             if (foundBookInstance.IsCheckedOut == true)
-                return BadRequest("Экземпляр книги с ИД = " + id.ToString() + " уже выдан чмитателю.");
+                return BadRequest("Экземпляр книги с ИД = " + id.ToString() + " уже выдан читателю.");
             foundBookInstance.IsCheckedOut = true;
             var updatedBookInstance = await _bookInstanceRepository.UpdateAsync(foundBookInstance);
             return Ok(_mapper.Map<BookInstance, BookInstanceIsCheckedOutResponse>(updatedBookInstance));
@@ -386,223 +394,171 @@ namespace Catalog_WebAPI.Controllers
         }
 
 
+
         /// <summary>
-        /// Получить данные о статусе состояния экземпляра книги
+        /// Получить данные о списании экземпляра книги
         /// </summary>
-        /// <param name="id">ИД экземпляра книги</param>        
-        /// <returns>Возвращает данные статусе состояния экземпляра книги читателю - объект BookInstanceStateResponse</returns>
+        /// <param name="id">ИД экземпляра книги</param>
+        /// <returns>Возвращает данные о списании экземпляра книги - объект BookInstanceIsWroteOffResponse</returns>
         /// <response code="200">Успешное выполнение</response>
         /// <response code="404">Не удалось найти экземпляр книги с указаным ИД</response>  
-        [HttpGet("GetState/{id:int}")]
-        [ProducesResponseType(typeof(BookInstanceStateResponse), (int)HttpStatusCode.OK)]
+        [HttpGet("GetIsWroteOff/{id:int}")]
+        [ProducesResponseType(typeof(BookInstanceIsWroteOffResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookInstanceStateResponse>> GetState(int id)
+        public async Task<ActionResult<BookInstanceIsWroteOffResponse>> GetIsWroteOff(int id)
         {
             var bookInstance = await _bookInstanceRepository.GetBookInstanceByIdAsync(id);
 
             if (bookInstance == null)
                 return NotFound("Экземпляр книги с ИД = " + id.ToString() + " не найден!");
 
-            return Ok(_mapper.Map<BookInstance, BookInstanceStateResponse>(bookInstance));
+            return Ok(_mapper.Map<BookInstance, BookInstanceIsWroteOffResponse>(bookInstance));
         }
 
+
         /// <summary>
-        /// Установить статус состояния экземпляра книги
+        /// Установить отметку, что экземпляр книги списан
         /// </summary>
-        /// <param name="id">ИД экземпляра книги</param>        
-        /// <param name="request">Параметры устанавливаемого статуса экземпляра книги - объект типа BookInstanceUpdateStateRequest</param>
-        /// <returns>Возвращает данные об установленном статусе состояния эеземпляра книги - объект BookInstanceStateResponse</returns>
+        /// <param name="id">ИД экземпляра книги</param>
+        /// <returns>Возвращает данные об отметке списания экземпляра книги  - объект BookInstanceIsWroteOffResponse</returns>
         /// <response code="200">Успешное выполнение.</response>
-        /// <response code="400">Статус требует комментарий, но он не указан</response>  
-        /// <response code="404">Не найден статус или эеземпляр книги с указаным ИД</response>  
-        [HttpPut("SetState/{id:int}")]
-        [ProducesResponseType(typeof(BookInstanceStateResponse), (int)HttpStatusCode.OK)]
+        /// <response code="400">Экземпляр книги уже списан</response>  
+        /// <response code="404">Не удалось найти экземпляр книги с указаным ИД</response>  
+        [HttpPut("SetIsWroteOff/{id:int}")]
+        [ProducesResponseType(typeof(BookInstanceIsWroteOffResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookInstanceStateResponse>> SetState(int id, BookInstanceUpdateStateRequest request)
+        public async Task<ActionResult<BookInstanceIsWroteOffResponse>> SetIsWroteOff(int id)
         {
             var foundBookInstance = await _bookInstanceRepository.GetBookInstanceByIdAsync(id);
             if (foundBookInstance == null)
                 return NotFound("Экземпляр книги с ИД = " + id.ToString() + " не найден.");
-
-
-            var foundStateById = await _stateRepository.GetByIdAsync(request.StateId);
-            if (foundStateById == null)
-                return NotFound("Не найден статус с ИД = " + request.StateId.ToString() + " в справочнике статусов состояний экземпляров книг");
-
-            if (foundStateById.IsNeedComment)
-            {
-                if (request.FactCommentId == null || request.FactCommentId <= 0)
-                    return BadRequest("Статус с ИД = " + request.StateId.ToString() + " (наименование = " + foundStateById.Name + ")"
-                        + " требует комментария, но поле FactCommentId пустое. Для статусов, требующих комментария (State.IsNeedComment = true) "
-                        + "необходимо, чтобы поля FactCommentId и FactCommentText были заполнены.");
-
-                if (String.IsNullOrWhiteSpace(request.FactCommentText))
-                    return BadRequest("Статус с ИД = " + request.StateId.ToString() + " (наименование = " + foundStateById.Name + ")"
-                        + " требует комментария, но поле FactCommentText в запросе пустое. Для статусов, требующих комментария (State.IsNeedComment = true) "
-                        + "необходимо, чтобы поля FactCommentId и FactCommentText были заполнены.");
-            }
-
-            if (foundBookInstance.StateId != request.StateId)
-                foundBookInstance.StateId = request.StateId;
-
-            if (foundBookInstance.FactCommentId != request.FactCommentId)
-                foundBookInstance.FactCommentId = request.FactCommentId;
-
-            if (!String.IsNullOrWhiteSpace(foundBookInstance.FactCommentText) && !String.IsNullOrWhiteSpace(request.FactCommentText))
-            {
-                if (foundBookInstance.FactCommentText.Trim().ToUpper() != request.FactCommentText.Trim().ToUpper())
-                {
-                    foundBookInstance.FactCommentText = request.FactCommentText;
-                }
-            }
-            else
-            {
-                if (String.IsNullOrWhiteSpace(request.FactCommentText))
-                    foundBookInstance.FactCommentText = String.Empty;
-            }
-
+            if (foundBookInstance.IsWroteOff == true)
+                return BadRequest("Экземпляр книги с ИД = " + id.ToString() + " уже списан.");
+            foundBookInstance.IsWroteOff = true;
             var updatedBookInstance = await _bookInstanceRepository.UpdateAsync(foundBookInstance);
-            return Ok(_mapper.Map<BookInstance, BookInstanceStateResponse>(updatedBookInstance));
+            return Ok(_mapper.Map<BookInstance, BookInstanceIsWroteOffResponse>(updatedBookInstance));
         }
 
-
-
         /// <summary>
-        /// Получить данные списании экземпляра книги
+        /// Снять отметку о списании экземпляра книги
         /// </summary>
         /// <param name="id">ИД экземпляра книги</param>
-        /// <returns>Возвращает данные о списании экземпляра книги - объект BookInstanceWriteOffResponse</returns>
+        /// <returns>Возвращает данные о списании экземпляра книги - объект BookInstanceIsWroteOffResponse</returns>
         /// <response code="200">Успешное выполнение</response>
         /// <response code="404">Не удалось найти экземпляр книги с указаным ИД</response>  
-        [HttpGet("GetWriteOffInfo/{id:int}")]
-        [ProducesResponseType(typeof(BookInstanceWriteOffResponse), (int)HttpStatusCode.OK)]
+        [HttpPut("UnSetIsWroteOff/{id:int}")]
+        [ProducesResponseType(typeof(BookInstanceIsWroteOffResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookInstanceWriteOffResponse>> GetWriteOffInfo(int id)
+        public async Task<ActionResult<BookInstanceIsWroteOffResponse>> UnSetIsWroteOff(int id)
         {
             var bookInstance = await _bookInstanceRepository.GetBookInstanceByIdAsync(id);
 
             if (bookInstance == null)
                 return NotFound("Экземпляр книги с ИД = " + id.ToString() + " не найден!");
 
-            return Ok(_mapper.Map<BookInstance, BookInstanceWriteOffResponse>(bookInstance));
-        }
+            if (bookInstance.IsWroteOff != true)
+                return BadRequest("Экземпляр книги с ИД = " + id.ToString() + " уже НЕ списан.");
 
-
-        /// <summary>
-        /// Очистить данные о списании экземпляра книги
-        /// </summary>
-        /// <param name="id">ИД экземпляра книги</param>
-        /// <returns>Возвращает данные о списании экземпляра книги - объект BookInstanceWriteOffResponse</returns>
-        /// <response code="200">Успешное выполнение</response>
-        /// <response code="404">Не удалось найти экземпляр книги с указаным ИД</response>  
-        [HttpPut("ClearWriteOffInfo/{id:int}")]
-        [ProducesResponseType(typeof(BookInstanceWriteOffResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookInstanceWriteOffResponse>> ClearWriteOffInfo(int id)
-        {
-            var bookInstance = await _bookInstanceRepository.GetBookInstanceByIdAsync(id);
-
-            if (bookInstance == null)
-                return NotFound("Экземпляр книги с ИД = " + id.ToString() + " не найден!");
-
-            bookInstance.WriteOffDate = null;
-            bookInstance.WriteOffUserId = null;
-            bookInstance.WriteOffReasonId = null;
+            bookInstance.IsWroteOff = false;
 
             var updatedBookInstance = await _bookInstanceRepository.UpdateAsync(bookInstance);
-            return Ok(_mapper.Map<BookInstance, BookInstanceWriteOffResponse>(bookInstance));
+            return Ok(_mapper.Map<BookInstance, BookInstanceIsWroteOffResponse>(bookInstance));
         }
 
 
+
+
         /// <summary>
-        /// Записать данные о списании экземпляра книги
+        /// Получить состояение отметки о бронировании экземпляра книги
         /// </summary>
         /// <param name="id">ИД экземпляра книги</param>
-        /// <param name="request">Данные о списании экземпляра книги - объект типа BookInstanceUpdateWriteOffRequest</param>
-        /// <returns>Возвращает данные о списании экземпляра книги - объект BookInstanceWriteOffResponse</returns>
+        /// <returns>Возвращает данные о состоянии отметки о бронировании экземпляра книги - объект BookInstanceIsBookedResponse</returns>
         /// <response code="200">Успешное выполнение</response>
-        /// <response code="400">Все три поля: WriteOffDate, WriteOffUserId, WriteOffReasonId должны быть заполнены</response>
         /// <response code="404">Не удалось найти экземпляр книги с указаным ИД</response>  
-        [HttpPut("SetWriteOffInfo/{id:int}")]
-        [ProducesResponseType(typeof(BookInstanceWriteOffResponse), (int)HttpStatusCode.OK)]
+        [HttpGet("GetIsBookedOff/{id:int}")]
+        [ProducesResponseType(typeof(BookInstanceIsBookedResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookInstanceWriteOffResponse>> SetWriteOffInfo(int id, BookInstanceUpdateWriteOffRequest request)
+        public async Task<ActionResult<BookInstanceIsBookedResponse>> GetIsBooked(int id)
         {
-
             var bookInstance = await _bookInstanceRepository.GetBookInstanceByIdAsync(id);
 
             if (bookInstance == null)
                 return NotFound("Экземпляр книги с ИД = " + id.ToString() + " не найден!");
 
-            if (request.WriteOffDate == null || request.WriteOffUserId == Guid.Empty || request.WriteOffReasonId == null || request.WriteOffReasonId <= 0)
-                return BadRequest("Все три поля: WriteOffDate, WriteOffUserId, WriteOffReasonId должны быть заполнены");
+            return Ok(_mapper.Map<BookInstance, BookInstanceIsBookedResponse>(bookInstance));
+        }
 
-            if (request.WriteOffDate > DateTime.Now)
-                return BadRequest("Нельзя списывать экземпляр книги будущим временем");
 
-            if (request.WriteOffDate != bookInstance.WriteOffDate)
-                bookInstance.WriteOffDate = request.WriteOffDate;
+        /// <summary>
+        /// Установить отметку, что экземпляр книги забронирован
+        /// </summary>
+        /// <param name="id">ИД экземпляра книги</param>
+        /// <returns>Возвращает данные о текущем состоянии отметки бронировании экземпляра книги  - объект BookInstanceIsBookedResponse</returns>
+        /// <response code="200">Успешное выполнение.</response>
+        /// <response code="400">Экземпляр книги уже отмечен как забронированный</response>
+        /// <response code="404">Не удалось найти экземпляр книги с указаным ИД</response>  
+        [HttpPut("SetIsBooked/{id:int}")]
+        [ProducesResponseType(typeof(BookInstanceIsBookedResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<BookInstanceIsBookedResponse>> SetIsBooked(int id)
+        {
+            var foundBookInstance = await _bookInstanceRepository.GetBookInstanceByIdAsync(id);
+            if (foundBookInstance == null)
+                return NotFound("Экземпляр книги с ИД = " + id.ToString() + " не найден.");
+            if (foundBookInstance.IsBooked == true)
+                return BadRequest("Экземпляр книги с ИД = " + id.ToString() + " уже отмечен как забронированный.");
+            foundBookInstance.IsBooked = true;
+            var updatedBookInstance = await _bookInstanceRepository.UpdateAsync(foundBookInstance);
+            return Ok(_mapper.Map<BookInstance, BookInstanceIsBookedResponse>(updatedBookInstance));
+        }
 
-            if (request.WriteOffUserId != bookInstance.WriteOffUserId)
-                bookInstance.WriteOffUserId = request.WriteOffUserId;
+        /// <summary>
+        /// Снять отметку о бронировании экземпляра книги
+        /// </summary>
+        /// <param name="id">ИД экземпляра книги</param>
+        /// <returns>Возвращает данные о состоянии отметки о бронировании экземпляра книги - объект BookInstanceIsBookedResponse</returns>
+        /// <response code="200">Успешное выполнение</response>
+        /// <response code="404">Не удалось найти экземпляр книги с указаным ИД</response>  
+        [HttpPut("UnSetIsBooked/{id:int}")]
+        [ProducesResponseType(typeof(BookInstanceIsBookedResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<BookInstanceIsBookedResponse>> UnSetIsBooked(int id)
+        {
+            var bookInstance = await _bookInstanceRepository.GetBookInstanceByIdAsync(id);
 
-            if (request.WriteOffReasonId != bookInstance.WriteOffReasonId)
-                bookInstance.WriteOffReasonId = request.WriteOffReasonId;
+            if (bookInstance == null)
+                return NotFound("Экземпляр книги с ИД = " + id.ToString() + " не найден!");
+
+            if (bookInstance.IsBooked != true)
+                return BadRequest("Экземпляр книги с ИД = " + id.ToString() + " уже и так отмечен как НЕ забронированный.");
+
+            bookInstance.IsBooked = false;
 
             var updatedBookInstance = await _bookInstanceRepository.UpdateAsync(bookInstance);
-            return Ok(_mapper.Map<BookInstance, BookInstanceWriteOffResponse>(bookInstance));
+            return Ok(_mapper.Map<BookInstance, BookInstanceIsBookedResponse>(bookInstance));
         }
 
-
-
         /// <summary>
-        /// Удалить экземпляр книги с указаным ИД в архив
+        /// Удалить экземпляр книги
         /// </summary>
-        /// <param name="id">ИД удаляемого в архив экземпляра книги</param>
-        /// <returns>Возвращает данные удалённого в архив экземпляра книги - объект BookInstanceResponse</returns>
-        /// <response code="200">Успешное выполнение. Экземпляр книги удалён в архив</response>
-        /// <response code="400">Не удалось удалить экземпляр книги в архив, так как он уже в архиве</response>  
-        /// <response code="404">Не удалось найти экземпляр книги с указаным ИД</response>  
-        [HttpPut("DeleteToArchive/{id:int}")]
-        [ProducesResponseType(typeof(BookInstanceResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        /// <param name="id">ИД удаляемой записи</param>
+        /// <returns>Возвращает количество удалённых записей</returns>
+        /// <response code="200">Успешное выполнение.</response>        
+        /// <response code="404">Не удалось найти эуземпляр книги с указанным ИД</response>  
+        [HttpDelete("DeleteById/{id:int}")]
+        [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookInstanceResponse>> DeleteBookInstanceToArchiveAsync(int id)
+        public async Task<ActionResult<int>> DeleteBookInstanceByIdAsync(int id)
         {
+
+            // TODO Или убрать удаление, или перед удалением проверять на наличие ссылок в БД других сервисов
             var foundBookInstance = await _bookInstanceRepository.GetBookInstanceByIdAsync(id);
             if (foundBookInstance == null)
-                return NotFound("Экземпляр книги с ИД = " + id.ToString() + " не найден.");
-            if (foundBookInstance.IsArchive == true)
-                return BadRequest("Экземпляр книги с ИД = " + id.ToString() + " уже в архиве.");
-            foundBookInstance.IsArchive = true;
-            var updatedBookInstance = await _bookInstanceRepository.UpdateAsync(foundBookInstance);
-            return Ok(_mapper.Map<BookInstance, BookInstanceResponse>(updatedBookInstance));
-        }
+                return NotFound("Запись с ИД = " + id.ToString() + " не найдена.");
 
-
-        /// <summary>
-        /// Восстановить экземпляр книги с указаным ИД из архива
-        /// </summary>
-        /// <param name="id">ИД восстанавливаемого из архива экземпляра книги</param>
-        /// <returns>Возвращает данные восстановленного из архива экземпляра книги - объект BookInstanceResponse</returns>
-        /// <response code="200">Успешное выполнение. Экземпляр книги восстановлен из архива</response>
-        /// <response code="400">Не удалось восстановить экземпляр книги из архива, так как он уже не в архиве</response>  
-        /// <response code="404">Не удалось найти экземпляр книги с указаным ИД</response>  
-        [HttpPut("RestoreFromArchive/{id:int}")]
-        [ProducesResponseType(typeof(BookInstanceResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookInstanceResponse>> RestoreBookInstanceFromArchiveAsync(int id)
-        {
-            var foundBookInstance = await _bookInstanceRepository.GetBookInstanceByIdAsync(id);
-            if (foundBookInstance == null)
-                return NotFound("Экземпляр книги с ИД = " + id.ToString() + " не найден.");
-            if (foundBookInstance.IsArchive != true)
-                return BadRequest("Экземпляр книги с ИД = " + id.ToString() + " не находится в архиве. Невозможно восстановить его из архива");
-            foundBookInstance.IsArchive = false;
-            var updatedBookInstance = await _bookInstanceRepository.UpdateAsync(foundBookInstance);
-            return Ok(_mapper.Map<BookInstance, BookInstanceResponse>(updatedBookInstance));
+            return Ok(await _bookInstanceRepository.DeleteAsync(foundBookInstance));
         }
     }
 
