@@ -89,6 +89,46 @@ namespace Catalog_WebAPI.Controllers
             return Ok(_mapper.Map<BookInstance, BookInstanceResponse>(bookInstance));
         }
 
+        /// <summary>
+        /// Получить максимальное количество дней, на которые можно выдавать читателю экземпляр книги по ИД экземпляра
+        /// </summary>
+        /// <param name="id">ИД экземпляра книги</param>
+        /// <returns>Возвращает найденый экземпляр книги по ИД - объект типа BookInstanceOutMaxDaysResponse</returns>
+        /// <response code="200">Успешное выполнение</response>
+        /// <response code="404">Экземпляр книги с заданным ИД не найден</response>
+        [HttpGet("GetBookInstanceOutMaxDays/{id:int}")]
+        [ProducesResponseType(typeof(BookInstanceOutMaxDaysResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<BookInstanceOutMaxDaysResponse>> GetBookInstanceOutMaxDaysAsync(int id)
+        {
+            var bookInstance = await _bookInstanceRepository.GetBookInstanceByIdAsync(id);
+
+            if (bookInstance == null)
+                return NotFound("Экземпляр книги с ID = " + id.ToString() + " не найден!");
+
+            return Ok(_mapper.Map<BookInstance, BookInstanceOutMaxDaysResponse>(bookInstance));
+        }
+
+        /// <summary>
+        /// Получить отметку о выдаче экземпляра книги только в читальный зал по ИД экземпляра
+        /// </summary>
+        /// <param name="id">ИД экземпляра книги</param>
+        /// <returns>Возвращает найденый экземпляр книги по ИД - объект типа BookInstanceOnlyForReadingRoomResponse</returns>
+        /// <response code="200">Успешное выполнение</response>
+        /// <response code="404">Экземпляр книги с заданным ИД не найден</response>
+        [HttpGet("GetBookInstanceOnlyForReadingRoom/{id:int}")]
+        [ProducesResponseType(typeof(BookInstanceOutMaxDaysResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<BookInstanceOutMaxDaysResponse>> GetBookInstanceOnlyForReadingRoomAsync(int id)
+        {
+            var bookInstance = await _bookInstanceRepository.GetBookInstanceByIdAsync(id);
+
+            if (bookInstance == null)
+                return NotFound("Экземпляр книги с ID = " + id.ToString() + " не найден!");
+
+            return Ok(_mapper.Map<BookInstance, BookInstanceOnlyForReadingRoomResponse>(bookInstance));
+        }
+
 
         /// <summary>
         /// Создание нового экземпляра книги

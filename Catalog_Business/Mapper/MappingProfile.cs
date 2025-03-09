@@ -39,6 +39,8 @@ namespace Catalog_Business.Mapper
 
             CreateMap<BookInstance, BookInstanceCreateUpdateRequest>().ReverseMap();
             CreateMap<BookInstance, BookInstanceResponse>();
+            CreateMap<BookInstance, BookInstanceOnlyForReadingRoomResponse>();
+            CreateMap<BookInstance, BookInstanceOutMaxDaysResponse>();
         }
     }
 }
