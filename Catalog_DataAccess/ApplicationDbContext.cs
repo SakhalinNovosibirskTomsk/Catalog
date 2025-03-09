@@ -306,21 +306,6 @@ namespace Catalog_DataAccess
                 .IsRequired();
 
             modelBuilder.Entity<BookInstance>()
-                .Property(u => u.IsCheckedOut)
-                .HasComment("Признак, что в данный момент экземпляр книги выдан читателю")
-                .IsRequired();
-
-            modelBuilder.Entity<BookInstance>()
-                .Property(u => u.IsBooked)
-                .HasComment("Признак, что в данный момент экземпляр книги забронирован читателем")
-                .IsRequired();
-
-            modelBuilder.Entity<BookInstance>()
-                .Property(u => u.IsWroteOff)
-                .HasComment("Признак, что в данный момент экземпляр книги списан")
-                .IsRequired();
-
-            modelBuilder.Entity<BookInstance>()
                 .Property(u => u.OnlyForReadingRoom)
                 .HasComment("Признак, что экземпляр книги можно выдавать только в читальный зал")
                 .IsRequired();

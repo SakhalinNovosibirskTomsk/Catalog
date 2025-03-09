@@ -842,9 +842,6 @@ namespace Catalog_DataAccess.DbInitializer
                                 Id = bookInstanceIdcounter,
                                 BookId = book.Id,
                                 InventoryNumber = "100001_" + bookInstanceIdcounter.ToString(),
-                                IsCheckedOut = (book.Id == 1 && bookInstanceIdcounter == 1 ? true : false),
-                                IsBooked = false,
-                                IsWroteOff = false,
                                 OnlyForReadingRoom = false,
                                 OutMaxDays = 14,
                             }

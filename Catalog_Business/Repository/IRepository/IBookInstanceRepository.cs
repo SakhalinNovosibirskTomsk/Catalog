@@ -1,5 +1,4 @@
-﻿using Catalog_Common;
-using Catalog_Domain.CatalogDB;
+﻿using Catalog_Domain.CatalogDB;
 
 namespace Catalog_Business.Repository.IRepository
 {
@@ -8,8 +7,6 @@ namespace Catalog_Business.Repository.IRepository
         public Task<IEnumerable<BookInstance>> GetAllBookInstancesAsync();
 
         public Task<IEnumerable<BookInstance>> GetBookInstancesByBookIdAsync(int bookId);
-
-        public Task<IEnumerable<BookInstance>> GetAllBookInstancesByFlagsAsync(SD.BookInstancesFags bookInstancesFag, bool isTrue = false);
 
         public Task<BookInstance> GetBookInstanceByIdAsync(int id);
 

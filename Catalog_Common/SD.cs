@@ -16,20 +16,5 @@
             All
         }
 
-
-        public enum BookInstancesFags
-        {
-            IsCheckedOut,
-            IsBooked,
-            IsWroteOff,
-            /// <summary>
-            /// все 3 флага не выставлены. Экземпляр можно выдавать, бронировать, списывать
-            /// </summary>
-            IsFree,
-            /// <summary>
-            /// один или более 3-х флагов выставлены. Экземпляр или выдан читателю, или забронирован, или списан
-            /// </summary>
-            IsBusy
-        }
     }
 }

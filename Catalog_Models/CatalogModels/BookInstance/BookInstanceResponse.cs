@@ -26,21 +26,6 @@ namespace Catalog_Models.CatalogModels.BookInstance
         public string InventoryNumber { get; set; }
 
         /// <summary>
-        /// Признак, что в данный момент экземпляр книги выдан читателю
-        /// </summary>                
-        public bool IsCheckedOut { get; set; } = false;
-
-        /// <summary>
-        /// Признак, что в данный момент экземпляр книги забронирован читателем
-        /// </summary>                
-        public bool IsBooked { get; set; } = false;
-
-        /// <summary>
-        /// Признак, что в данный момент экземпляр книги списан
-        /// </summary>                
-        public bool IsWroteOff { get; set; } = false;
-
-        /// <summary>
         /// Признак, что экземпляр книги можно выдавать только в читальный зал
         /// </summary>
         public bool OnlyForReadingRoom { get; set; } = false;
